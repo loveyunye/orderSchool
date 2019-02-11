@@ -1,0 +1,4 @@
+/* pages/food.wxss */
+.foodView {
+  color: #000;
+}

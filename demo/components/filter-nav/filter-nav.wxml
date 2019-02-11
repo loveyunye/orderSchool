@@ -1,0 +1,13 @@
+<!--components/filter-nav/filter-nav.wxml-->
+<view>
+  <view class='tab'>
+    <view class='nav-item {{itemNum===1?"select-item":""}}' bindtap='selectItemNum' data-item-num='{{1}}'>
+      <text class='title line-ellipsis'>{{itemName1}}</text>
+      <text class='city-entry-arrow'></text>
+    </view>
+    <view class='nav-item have-border {{itemNum===2?"select-item":""}}' bindtap='selectItemNum' data-item-num='{{2}}'>
+      <text class='title line-ellipsis'>{{itemName2}}</text>
+      <text class='city-entry-arrow'></text>
+    </view>
+  </view>
+</view>

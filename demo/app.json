@@ -1,0 +1,40 @@
+{
+  "pages": [
+    "pages/food/food",
+    "pages/order/order",
+    "pages/user/user",
+    "pages/index/index",
+    "pages/login/login",
+    "pages/logs/logs"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#1296db",
+    "navigationBarTitleText": "校园订餐",
+    "navigationBarTextStyle": "#fff"
+  },
+  "tabBar": {
+    "color": "#696969",
+    "selectedColor": "#1296db",
+    "list": [
+      {
+        "pagePath": "pages/food/food",
+        "text": "外卖",
+        "iconPath": "assets/img/dinner.png",
+        "selectedIconPath": "assets/img/dinner_select.png"
+      },
+      {
+        "pagePath": "pages/order/order",
+        "text": "订单",
+        "iconPath": "assets/img/order.png",
+        "selectedIconPath": "assets/img/order_select.png"
+      },
+      {
+        "pagePath": "pages/user/user",
+        "text": "我的",
+        "iconPath": "assets/img/user.png",
+        "selectedIconPath": "assets/img/user_select.png"
+      }
+    ]
+  }
+}

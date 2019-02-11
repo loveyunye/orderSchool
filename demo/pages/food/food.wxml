@@ -1,0 +1,6 @@
+<!--pages/food.wxml-->
+<view class='foodView'>
+  <view wx:key="{{item.dinner_id}}" wx:for="{{dinnerList}}" >
+    <text>{{item.dinner_name}}</text>
+  </view>
+</view>

@@ -1,0 +1,24 @@
+<view class='view_login'>
+  <view class='title_icon'></view>
+  <!-- {{phone}} - {{password}} -->
+  <view class='login_container'>
+    <form>
+      <input placeholder-class="phcolor" value="{{phone}}" maxlength="11" placeholder='手机号' type="number" bindinput="bindKeyPhone"/>
+      <input placeholder-class="phcolor" value="{{password}}" maxlength="15" placeholder='登录密码' password bindinput="bindKeyPassword"/>
+      <input placeholder-class="phcolor" maxlength="15" wx:if="{{!hasRegister}}" placeholder='再次确定' password bindinput="bindKeyConfirm"/>
+      <button wx:if="{{hasRegister}}" open-type='getUserInfo' bindgetuserinfo="userInfoHandler">
+        登录        
+      </button>
+      <button wx:else open-type='getUserInfo' bindgetuserinfo="registerHandler">
+        注册         
+      </button>
+    </form>
+  </view>
+
+  <view class='registerText'>
+    <button bindtap='registerTarget' type="text">
+      <text wx:if="{{hasRegister}}">暂无账号 <text>注册</text></text>
+      <text wx:else>已有账号 <text>登录</text></text>
+    </button>
+  </view>
+</view>

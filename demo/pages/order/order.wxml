@@ -1,0 +1,42 @@
+<import src='../../templates/loadingMore/loadingMore.wxml' />
+
+
+
+<!-- <text>历史订单</text> -->
+<view class='container'>
+  <view class="order" wx:key="{{item.orderId}}" wx:for="{{historyOrderList}}"  wx:for-index="index" wx:for-item="item">
+    <!-- {{index+1}}、 -{{item.shopName}}
+    <image src="{{item.avatar}}"></image> -->
+
+    <view class='avatar'>
+      <image src="{{item.avatar}}" mode="cover"></image>
+    </view>
+    <view class='message'>
+      
+
+      <view class='shopname'>
+        <button  class='btn' hover-class='none'>
+          <text>{{item.shopName}}</text>  
+        </button>
+        <!-- <text>{{item.date}}</text> -->
+      </view>
+      <view class='orderDate'>
+        <text>{{item.date}}</text>
+      </view>
+
+      <view class='dinnerName'>
+        <view>{{item.dinnerName}}</view>  
+        <view>¥{{item.price}}</view>
+      </view>
+
+      <view class='comment'>
+        <button>评价</button>
+        <button>再来一单</button>
+      </view>
+
+    </view>
+
+  </view>
+</view>
+
+<!-- <template is="loadingMore" /> -->
