@@ -1,0 +1,7 @@
+
+
+mysql:
+  host:   '101.132.44.31' #测试
+  user:   'root'
+  password: 'root'
+  database: 'SchoolOrder'
