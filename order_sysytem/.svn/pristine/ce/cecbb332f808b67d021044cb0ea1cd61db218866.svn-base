@@ -1,0 +1,309 @@
+<template>
+	<div class="dashboard">
+		<el-row :gutter="20">
+			<el-col :span='14'>
+				
+
+				<div class="banner_new banner_block">
+					<el-carousel height="400px" arrow="always">
+						<el-carousel-item v-for="(item,index) in newsImgs" :key="index" style="display: flex;justify-content: center;align-items: center;">
+							<img :src="item.url" alt="" class="photo">
+						</el-carousel-item>
+					</el-carousel>
+				</div>
+			</el-col>
+
+			<el-col :span="10">
+				<div class="banner_new">
+					<div class="news">
+						简介 / Introduction 
+					</div>
+					<div v-html="introduction" style="padding:20px;">
+
+					</div>
+				</div>
+			</el-col>
+		</el-row>
+		
+		<el-row :gutter="20" style="margin-top:20px">
+			<el-col :span="12">
+				<div class="banner_new">
+					<div class="news">
+						新闻咨讯 / News    <span @click="goNews('news')" style="float: right;cursor:pointer">更多</span>
+					</div>
+					<ul>
+						<li v-for="(item,index) in newsList" :key="index" @click="goNewsDetail(item.newsId,'news')">
+							<span>{{item.title}}</span> <span>&nbsp;&nbsp;<img v-show="item.isPop" src="../../assets/top01_1.png" height="20px" alt=""></span> <span>{{item.createTime}}</span>
+						</li>
+					</ul>
+				</div>
+			</el-col>
+
+			<el-col :span="12">
+				<div class="banner_new">
+					<div class="news">
+						通知公告 / Announcement    <span @click="goNews('notices')" style="float: right;cursor:pointer">更多</span>
+					</div>
+					<ul>
+						<li v-for="(item,index) in noticeList" :key="index" @click="goNewsDetail(item.newsId,'notices')">
+							<span>{{item.title}}</span><span >&nbsp;&nbsp;<img v-show="item.isPop" src="../../assets/top01_1.png" height="20px" alt=""></span> <span>{{item.createTime}}</span>
+						</li>
+					</ul>
+				</div>
+			</el-col>
+
+		</el-row>
+
+		<el-row>
+			<div class="banner_appointment">
+				<el-table :data="routeList" style="width:100%" border>
+					<el-table-column v-for="(item,index) in itemArr" :key="index" :width="itemWidth[index]" :label="cnameArr[index]" align="center" :prop="itemArr[index]">
+						<template slot-scope="scope">
+							<span v-html="scope.row[item]" :class="index===1||index===3?'linkItem':'' " v-on:click="detailItem(scope.$index,scope.row,item)"></span>
+						</template>
+					</el-table-column>
+					<el-table-column   align="center" label="课程评分">
+						<template slot-scope="scope">
+							{{scope.row.evaluation?scope.row.evaluation:'暂无'}}
+						</template>
+					</el-table-column>
+					
+				</el-table>
+				<div class="moreRoute">
+					<el-button @click="moreRoute">查看更多</el-button>
+				</div>
+			</div>
+		</el-row>
+
+		<RouteDetail :routeDetail='routeDetail' :showDetail="dialogDetail" @close="dialogDetail=false"></RouteDetail>
+
+		
+		<RouteOrder :dialogShow="dialogOrderShow" :orderObject="dialogOrder" @close="dialogOrderShow=false"></RouteOrder>
+
+
+		<RouteInstructions :showInstructions="dialogInstruction" @agree="dialogInstruction=false;dialogOrderShow=true" @close="dialogInstruction=false;"></RouteInstructions>
+
+		<BaseDialog :dialogShow="baseDialogShow"  @close="baseDialogShow=false" :baseId="baseId"></BaseDialog>
+
+	</div>
+</template>
+
+<script type="text/javascript">
+	import ajax from '@/utils/ajax.js'
+	import { distinct } from '@/utils'
+	import RouteDetail from '@/components/RouteDetail'
+	import RouteInstructions from '@/components/RouteInstructions'
+	import RouteOrder from '@/components/RouteOrder'
+  import BaseDialog from '@/components/BaseDialog'
+
+
+	export default {
+		data() {
+			return {
+				introduction: '',
+				newsList: [],
+				noticeList: [],
+				routeList: [],
+				newsImgs: [],
+				cnameArr: ['课程编号','课程名称','关键词','包含基地','所属区域'],
+				itemArr: ['courseSerialNumber','courseName','courseThemeName','baseName','coursePlaceName'],
+				itemWidth: ['120','300','300','280','200'],
+
+				// dialog_route_detail
+				routeDetail: {teachArr:[]},
+				dialogDetail: false,
+
+				// dialog_route_instructions
+				dialogInstruction: false,
+				// dialog_route_order
+				dialogOrder: {},
+				dialogOrderShow:false,
+
+
+				// 增加基地
+				baseDialogShow: false,
+        baseId:0,
+
+			}
+		},
+		methods: {
+			premission(row) {
+				this.$store.dispatch('GetUserInfo').then(res => {
+					if(res) {
+						this.dialogInstruction = true
+						this.dialogOrder = row
+					} else {
+						this.$confirm('您还未登录，是否前往登录?','提示',{
+							confirmButtonText: '确定',
+							cancelButtonText: '取消',
+							type: 'warning'
+						}).then(()=>{
+							this.$store.dispatch('LogOut').then(()=>{
+								this.$router.push({ path: '/login'})
+							})
+						}).catch(() => {})
+					}
+				})
+			},
+
+			routeOrder(row){
+				this.dialogInstruction = true
+			},
+			detailItem(index,row, value){
+				if(value==='courseName'){
+					this.routeDetail = row
+					this.dialogDetail = true
+				} else if(value === 'baseName'){
+					this.baseId = row.baseId
+        	this.baseDialogShow = true
+				}
+				
+			},
+
+			// route path => go/push
+			moreRoute(){
+				this.$router.push({ path:'/convention' })
+			},
+			goNewsDetail(id,type){
+				
+				if(type=='news'){
+					this.$router.push({ path:'/news/news/detail/'+id })
+				}	else {
+					this.$router.push({ path:'/news/notice/noticeDetail/'+id })
+				}
+			},
+			goNews(type) {
+				if(type=='news'){
+					this.$router.push({ path: '/news/news/newsIndex'})
+				}	else {
+					this.$router.push({ path: '/news/notice/noticeIndex'})
+				}
+			}
+		},
+		mounted() {
+			ajax('/portal/common/getNewsImages.do',{
+				},'all').then(res => {
+				this.newsImgs = res.data;
+			})
+			// 获取新闻
+			ajax('/portal/common/getNewestClassNews.do',{},'all').then(res => {
+				this.newsList = res;
+			})
+			ajax('/portal/common/getNewestClassNotices.do',{},'all').then(res => {
+				this.noticeList = res;
+			})
+			ajax('/portal/common/getSystemIntroduction.do',{},'all').then(res => {
+				this.introduction = res.data
+			})
+
+			ajax('/portal/common/getNewRouteLauncheds.do',{},'all').then(res => {
+				
+				this.routeList = res.map(item => item)
+				this.routeList.forEach(itemList => {
+					itemList.coursePlaceName = itemList.coursePlaceName.split('/').splice(1,2).join('/')
+					let teachIds = itemList.teacherIds.split(',')
+					let teachNames = itemList.teacherNames.split('/')
+					itemList.teachArr = teachIds.map((item,index) => teachNames[index]+'&'+item)
+				})
+				// this.newsList = res.aaData
+			})
+			// this.getRouteList()
+		},
+		
+		components:{
+			RouteDetail,RouteInstructions,RouteOrder,BaseDialog
+		}
+	}
+	
+</script>
+
+<style lang="scss" >
+	$color: #c01a0c;
+
+	.dashboard {
+		.banner_block {
+			background-size: auto 100%;
+			background-position: center 0;
+		}
+		.banner_new {
+			height: 400px;
+			background-color: #fff;
+			.news {
+				background-color: $color;
+				height: 45px;
+				line-height: 45px;
+				padding: 0 20px;
+				color: #fff;
+				font-size: 18px;
+				// span {
+				// 	display: inline-block;
+				// 	// float: right;
+				// 	font-size: 14px;
+				// 	cursor: pointer;
+				// }
+			}
+			ul {
+				padding: 5px 15px;
+				li {
+					border-bottom: dotted 1px #ccc;
+					line-height: 40px;
+					cursor: pointer;
+					overflow: hidden;
+					span:nth-child(1){
+						white-space: nowrap;
+						overflow: hidden;
+						text-overflow: ellipsis;
+						max-width: 400px;
+						display: block;
+						float: left;
+					}
+					span:nth-child(2) {
+						display: flex;
+						line-height: 40px;
+						height: 36px;
+						float: left;
+						align-items: center;
+					}
+					span:nth-child(3) {
+						float: right;
+					}
+					
+				}
+			}
+		}
+		.banner_appointment {
+			margin-top: 20px;
+			// height: 600px;
+			padding-bottom: 20px;
+			background-color: #fff;
+			.el-table thead {
+				background-color: $color;
+				color: #fff;
+				font-weight: normal;
+			}
+			.el-table th {
+				background-color: $color;
+				// padding: 6px 0;
+				font-weight: normal;
+			}
+			.el-table td { padding: 11px 0;.linkItem{text-decoration: underline;cursor: pointer;}}
+
+
+			.moreRoute {
+				text-align: center;
+				margin-top: 20px;
+				.el-button {
+					background-color: #bdbdbd;
+					color: #fff;
+					padding: 10px 40px;
+					border: none;
+				}
+			}
+		}
+		.photo{
+			max-height: 100%;
+			max-width: 100%;
+			width: 100%;
+		}
+	}
+</style>

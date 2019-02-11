@@ -1,0 +1,157 @@
+<template>
+  <div>
+    <xu-dialog :showDialog='dialogDetail'  @close="closeDetail" class="routeDetail">
+			<div class="dialog_header">
+        <el-row>
+          <el-col :span="11">
+            课程编号： {{ routerObject.courseSerialNumber}}
+          </el-col>
+          <el-col :span="13">
+            课程名称： {{routerObject.courseName}}
+          </el-col>
+          <el-col :span="11">
+            基地： <span  class="base" @click="baseDetail(routerObject.baseId)">{{routerObject.baseName}}</span>
+          </el-col>
+          <el-col :span="13">
+            宣教员： <span v-for="(item,index) in routerObject.teachArr" :key="index" class="base" @click="teachDetail(item.split('&')[1])">{{item.split('&')[0]}}</span>
+
+            <!-- 宣教员： {{routerObject.teachArr.length>0?routerObject.teachArr.map(item=>item.split('&')[0]).join():'暂无'}} -->
+          </el-col>
+        </el-row>
+      </div>
+      <div class="dialog_content">
+        <div class="block">
+          <div class="title">行程安排</div>
+          <div class="word">
+            {{routerObject.routeScheduling?routerObject.routeScheduling:'暂无安排'}}
+          </div>
+        </div>
+        <div class="block">
+          <div class="title">课程简介</div>
+          <div class="word">
+            {{routerObject.courseIntroduction?routerObject.courseIntroduction:'暂无安排'}}
+          </div>
+        </div>
+        <div class="block">
+          <div class="title">课程评价</div>
+          <div class="rate">
+            <el-col :span="8">
+              <el-rate v-model="routerObject.evaluation" show-score disabled score-template=""></el-rate>
+            </el-col>
+            <el-col :span="7">
+              {{routerObject.evaluation}} 分
+            </el-col>
+          </div>
+        </div>
+      </div>
+		</xu-dialog>
+
+		<BaseDialog :dialogShow="baseDialogShow"  @close="baseDialogShow=false" :baseId="baseId"></BaseDialog>
+
+		<TeachDialog :dialogShow="teachDialogShow"  @close="teachDialogShow=false" :teachId="teachId"></TeachDialog>
+
+
+  </div>
+</template>
+<script>
+	import XuDialog from './XuDialog.vue'
+  import BaseDialog from './BaseDialog.vue'
+  import TeachDialog from './TeachDialog.vue'
+  
+
+  export default {
+    props:['routeDetail','showDetail'],
+    data() {
+      return {
+        dialogDetail:true,
+        routerObject:{
+          teachArr: []
+        },
+        // baseDialog_ show
+        baseDialogShow: false,
+        baseId:0,
+
+        // teachDialog_show
+        teachDialogShow: false,
+        teachId:0,
+      }
+    },
+    methods: {
+      teachDetail(id){
+        console.log(id)
+        this.teachDialogShow = true
+        this.teachId = +id
+
+      },
+      closeDetail() {
+        this.$emit('close')
+      },
+      baseDetail(id) {
+        // console.log(id)
+        this.baseId = id
+        this.baseDialogShow = true
+      }
+    },
+    watch: {
+      routeDetail(val) {
+        this.routerObject = val
+        console.log(this.routerObject)
+      },
+      showDetail(val) {
+        this.dialogDetail = val
+      }
+    },
+    mounted() {
+      this.routerObject = JSON.parse(JSON.stringify(this.routeDetail))
+      this.dialogDetail = this.showDetail?true:false
+    },
+    components:{
+      XuDialog,BaseDialog,TeachDialog
+    }
+  }
+</script>
+
+<style lang="scss">
+	$bannerColor: #c01a0c;
+
+  .routeDetail {
+    .dialog_header {
+      background-color: $bannerColor;
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
+      padding: 20px 50px;
+      color: #fff;
+      line-height: 24px;
+      .base {
+        text-decoration: underline;
+        cursor: pointer;
+        margin-right: 10px;
+      }
+      
+    }
+    .dialog_content {
+      padding: 20px 50px 50px;
+      div.block {
+        padding: 10px 0 10px;
+        .title {
+          color: #333;
+          font-size: 16px;
+          padding-bottom: 10px;
+        }
+        .word {
+          color: #555;
+        }
+        .rate {
+          font-size: 20px;
+          line-height: 30px;
+          color: #aaa;
+          .el-rate__icon {
+            font-size: 30px;
+          }
+        }
+      }
+    }
+  }
+    
+</style>
+

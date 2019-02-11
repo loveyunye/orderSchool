@@ -1,0 +1,280 @@
+<template>
+	<div class="presentPage">
+		<el-row>
+			<el-table :data="routeList" style="width:100%" border class="routePage_table">
+				<el-table-column   align="center" label="序号" width="50">
+					<template slot-scope="scope">
+						{{scope.$index+1}}
+					</template>
+				</el-table-column>
+				<el-table-column   align="center" label="课程名称" width="280">
+					<template slot-scope="scope">
+						<span v-html="scope.row.courseName" class="linkItem" v-on:click="detailItem(scope.$index,scope.row,'courseName')"></span>
+					</template>
+				</el-table-column>
+				<el-table-column   align="center" label="预约教学时间" width="110">
+					<template slot-scope="scope">
+						{{scope.row.reservaRouteDate}}
+					</template>
+				</el-table-column>
+				<el-table-column   align="center" label="人数" width="70">
+					<template slot-scope="scope">
+						{{scope.row.reservaRouteScale}}
+					</template>
+				</el-table-column>
+				<el-table-column   align="center" label="包含基地" width="280">
+					<template slot-scope="scope">
+						<span v-html="scope.row.baseName?scope.row.baseName:'暂不显示'" class="linkItem" v-on:click="detailItem(scope.$index,scope.row,'baseName')"></span>
+					</template>
+				</el-table-column>
+				<el-table-column   align="center" label="宣教员" width="80">
+					<template slot-scope="scope">
+						{{scope.row.reservaRouteTeacherName}}
+					</template>
+				</el-table-column>
+				<el-table-column   align="center" label="状态" width="80">
+					<template slot-scope="scope">
+							{{scope.row.reservaStatusName}}
+					</template>
+				</el-table-column>
+				<el-table-column   align="center" label="详情" width="80">
+					<template slot-scope="scope">
+						<el-button size="mini"  v-on:click="allDetail(scope.row)" >查看</el-button>
+					</template>
+				</el-table-column>
+				<el-table-column   align="center" label="操作">
+					<template slot-scope="scope">
+						<!-- {{scope.row.reservaStatusName==='待评价'?'':'——'}} -->
+						<el-button size="mini" type="primary" v-on:click="comment(scope.row)" v-if="scope.row.reservaStatusName==='待评价'">评价</el-button>
+						<el-button size="mini" type="primary" v-on:click="commentDetail(scope.row)" v-if="scope.row.reservaStatusName==='已评价'">查看评价</el-button>
+						<el-button size="mini" type="danger" v-on:click="cancel(scope.row,scope.row.reservaStatusName)" v-if="scope.row.reservaStatusName==='待审核'||scope.row.reservaStatusName==='待出行'">取消</el-button>
+					</template>
+				</el-table-column>
+
+				
+			</el-table>
+		</el-row>
+		<div>
+			
+		</div>
+		
+		<el-pagination
+			class="pageChange"
+			@current-change="changeCurrent"
+			background
+			layout="prev,pager,next"
+			:pager-count="5"
+			:page-size="10"
+			:total="totalRoute"
+		>
+		</el-pagination>
+
+		<!-- 展示三人组 -->
+		<RouteDetail :routeDetail='routeDetail' :showDetail="dialogDetail" @close="dialogDetail=false"></RouteDetail>
+		<BaseDialog :dialogShow="baseDialogShow"  @close="baseDialogShow=false" :baseId="baseId"></BaseDialog>
+
+
+		<ReservaDetail :dialogShow="reservaDialogshow" @close="reservaDialogshow=false" :reservaId="reservaId"/>
+
+		<!-- 评价双人组 -->
+		<comment :dialogShow="dialogOrderShow"  :orderObject="routeComment" @close="dialogOrderShow=false" @refresh="refresh"></comment>
+		<myComment :reservaRouteTrueCommunity="reservaRouteTrueCommunity" :reservaRouteTrueScale="reservaRouteTrueScale" :dialogShow="dialogMyCommentShow"  :routeId="routeIdDialogMy" @close="dialogMyCommentShow=false" ></myComment>
+
+	</div>
+</template>
+
+<script type="text/javascript">
+	import RouteDetail from '@/components/RouteDetail'
+	import RouteInstructions from '@/components/RouteInstructions'
+	import ajax from '@/utils/ajax'
+	import { distinct } from '@/utils'
+	import RouteOrder from '@/components/RouteOrder'
+  import BaseDialog from '@/components/BaseDialog'
+	import comment from '@/components/comment'
+	import myComment from '@/components/myComment'
+	import ReservaDetail from '@/components/ReservaDetail'
+	export default {
+		data() {
+			return {
+				searchParams: {
+					length: 10,
+					start: 0,
+				},
+				routeList: [],
+				totalRoute:0,
+				cnameArr: ['课程编号','课程名称','关键词','包含基地','所属区域'],
+				itemArr: ['courseSerialNumber','courseName','courseThemeName','baseName','coursePlace'],
+				itemWidth: ['120','280','200','300','110','110'],
+
+				// dialog_route_detail
+				routeDetail: {teachArr:[]},
+				dialogDetail: false,
+				// 增加基地
+				baseDialogShow: false,
+				baseId:0,
+				// 评价详情
+				dialogMyCommentShow: false,
+				routeIdDialogMy: 0,
+				// 评价内字段
+				reservaRouteTrueScale:'',
+				reservaRouteTrueCommunity:'',
+				// 我的评价
+				dialogOrderShow:false,
+				routeComment:{},
+				// 详情
+				reservaDialogshow:false,
+				reservaId:0
+			}
+		},
+		methods: {
+			// 查看预约详情
+			allDetail(row) {
+				this.reservaId = row.classReservaRouteId
+				this.reservaDialogshow = true
+			},
+			cancel(row,str){
+				if(str === '待审核'){
+					this.$confirm('确定要取消这个课程吗?','提示',{
+						confirmButtonText: '确定',
+						cancelButtonText: '取消',
+						type: 'warning'
+					}).then(()=>{
+						ajax('/slianclass-pc-web/portal/reserve/cancelReserve.do',{
+							reservaRouteId:row.classReservaRouteId
+						}).then(res => {
+							if(res.code === 0){
+								this.$message.success(res.data)
+							}else {
+								this.$message.error(res.data)
+							}
+							this.refresh()
+						})
+					}).catch(() => {})
+				}else {
+					this.$alert('请联系管理员取消出行，课程管理员联系方式请查看课程介绍。', '提示', {
+						confirmButtonText: '确定',
+					});
+				}
+			},
+			commentDetail(row){
+				this.routeIdDialogMy = row.classReservaRouteId
+				this.reservaRouteTrueCommunity = row.reservaRouteTrueCommunity
+				this.reservaRouteTrueScale = row.reservaRouteTrueScale
+				this.dialogMyCommentShow = true
+			},
+			comment(row){
+				this.dialogOrderShow = true
+				this.routeComment = Object.assign({},row)
+			},
+			getDate(date){
+				this.dialogOrder =  Object.assign({},this.dialogOrderShow,{reservaRouteDate:date})
+				this.dateDialogShow = false;
+				this.dialogOrderShow = true;
+			},
+			premission(row) {
+				this.$store.dispatch('GetUserInfo').then(res => {
+					if(res) {
+						
+					} else {
+						this.$confirm('您还未登录，是否前往登录?','提示',{
+							confirmButtonText: '确定',
+							cancelButtonText: '取消',
+							type: 'warning'
+						}).then(()=>{
+							this.$store.dispatch('LogOut').then(()=>{
+								this.$router.push({ path: '/login'})
+							})
+						}).catch(() => {})
+					}
+				})
+			},
+			refresh() {
+				this.dialogOrderShow=false
+				this.getCourseList()
+			},
+			detailItem(index,row, value){
+				if(value==='courseName'){
+					ajax('/portal/common/getCourseDetailedById.do',{
+						id:row.courseId
+					}).then(res => {
+						this.routeDetail = res.data
+						let teachIds = this.routeDetail.teacherIds.split(',')
+						let teachNames = this.routeDetail.teacherNames.split('/')
+						this.routeDetail.teachArr = teachIds.map((item,index) => teachNames[index]+'&'+item)
+						this.dialogDetail = true
+					})
+					
+				} else {
+					this.baseId = row.baseId
+        	this.baseDialogShow = true
+				}
+				
+			},
+			changeCurrent(value){
+				this.searchParams.start = 10 * (value-1)
+				this.getCourseList()
+			},
+			getCourseList() {
+				ajax('/portal/reserve/findNowReserve.do',this.searchParams,'.routePage_table').then(res => {
+					this.routeList = res.aaData
+					this.totalRoute = res.recordsTotal
+					
+				})
+			}
+		},
+		mounted() {
+			this.getCourseList()
+			
+		},
+		components:{
+			RouteDetail,BaseDialog,comment,myComment,ReservaDetail
+		}
+	}
+	
+</script>
+
+<style type="text/scss" lang="scss" >
+	$bannerColor: #c01a0c;
+
+
+	.presentPage {
+		
+		.searchBtn {
+			margin-top: 10px;
+			height: 40px;
+		}
+
+		.el-button {
+			border: none;
+		}
+
+		.pageChange {
+			text-align: center;
+			margin: 50px 0;
+		}
+
+		.el-pagination.is-background .el-pager li:not(.disabled).active {
+			background-color: $bannerColor;
+			color: #fff;
+		}
+		.el-table {
+			min-height: 350px;
+		}
+		.el-table thead {
+				background-color: $bannerColor;
+				color: #fff;
+				font-weight: normal;
+			}
+			.el-table th {
+				background-color: $bannerColor;
+				// padding: 6px 0;
+				font-weight: normal;
+			}
+			.el-table td { padding: 11px 0;.linkItem{text-decoration: underline;cursor: pointer;}}
+
+		.el-table td, .el-table th {
+			padding: 10px 0;
+		}	
+
+	}
+</style>

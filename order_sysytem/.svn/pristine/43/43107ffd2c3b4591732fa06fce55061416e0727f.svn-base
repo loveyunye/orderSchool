@@ -1,0 +1,195 @@
+<template>
+	<div class="login-container">
+		<div class="loginHeader">
+			<img src="../../assets/title_new.png" width="700px">
+		</div>
+		<!-- <router-link to="/">登陆</router-link> -->
+		<el-form class="login-form"  :model="loginForm" :rules="loginRules" ref="loginForm">
+			<div class="title-container">
+				<div class="accout">用户登录</div>
+				<div class="card"><el-button size="small" @click="authCard">浙大通行证登录</el-button></div>
+			</div>
+
+			<el-form-item prop="userName">
+				<div class="formDiv">
+					<div class="name">用户名:</div><div class="input"><input 
+						style="border: none;
+						outline:none;
+    				width: 80%;
+						background-color:#fbfbf2;
+    				border-bottom: 1px solid #777;line-height: 40px;padding-left:10px;"
+					 type="text" v-model="loginForm.userName"></div>
+				</div>
+			</el-form-item>
+			<el-form-item prop="password">
+				<div class="formDiv">
+					<div class="name">密码:</div><div class="input"><input 
+					style="border: none;
+    				width: 80%;
+						background-color:#fbfbf2;
+						outline:none;
+    				border-bottom: 1px solid #777;line-height: 40px;padding-left:10px;"
+					type="password" v-model="loginForm.password"></div>
+				</div>
+			</el-form-item>
+			<!-- <el-form-item>
+				验证码 <input type="text">
+			</el-form-item> -->
+			<!-- <el-button @click.native="loginUserInfo">登陆</el-button> -->
+			<div class="submit">
+				<el-button type="primary" style="width:80%;margin-bottom:20px;" :loading="loading" @click.native.prevent="loginUserInfo">登录</el-button>
+			</div>
+		</el-form>
+
+
+		<div class="loginFooter">
+			<!-- 我志愿加入中国共产党，拥护党的纲领，遵守党的章程，履行党员义务，
+			执行党的决定，<br>
+			严守党的纪律，保守党的秘密，对党忠诚，积极工作，为共产主义奋斗终身，
+			随时准备为党和人民牺牲一切，永不叛党。 -->
+			技术支持 ： 宁波数联有限公司 主办单位 ：浙江大学 <br>
+			浙ICP备 00000000 号
+		</div>
+	</div>
+</template>
+
+<script type="text/javascript">
+
+	export default {
+		data() {
+			return {
+				loginForm: {
+					userName: '',
+					password: ''
+				},
+				loginRules: {
+					userName: [{ required: true, trigger: 'blur' , message: '不能为空'}],
+					password: [{ required: true, trigger: 'blur',  message: '不能为空'}]
+				},
+				loading:false,
+			}
+		},
+		methods: {
+			authCard() {
+				window.location.href = 'https://zjuam.zju.edu.cn/cas/oauth2.0/authorize?client_id=gb0B3oGJyPtjid7RJF&redirect_uri=http://xcjxjd.zju.edu.cn/slianclass-pc-web/login/zju.do&response_type=code&state=reserve'
+			},
+
+			loginUserInfo() {
+				this.$refs.loginForm.validate(valid => {
+					if(valid) {
+						this.loading = true
+						this.$store.dispatch('LoginUserInfo',this.loginForm).then(res=>{
+							if(res == 'user'){
+								this.$router.push({ path: '/'})
+							}else if(res == 'admin') {
+								window.location.href = '/slianclass-admin'
+							}else {
+								this.$message.error(res.msg)
+							}
+							this.loading = false
+
+						})
+					}
+				})
+			}
+		},
+		mounted() {
+
+		}
+	}
+
+	
+</script>
+
+<style type="text/scss" scoped lang='scss'>
+	$bg:#4a6c99;
+	.login-container {
+		position: fixed;
+		height: 100%;
+		width: 100%;
+		background: url('../../assets/banner_new.png') ;
+		background-size: auto 100%;
+		background-position: center 0;
+
+		.loginHeader {
+			margin-top: 45px;
+			text-align: center;
+			// overflow: hidden;
+
+			// width: 750px;
+			// margin: 45px auto;
+			// line-height: 90px;
+			// font-family: "KaiTi"," DFKai-SB","STKaiti";
+
+		
+		}
+
+		.login-form {
+			background-color: #fbfbf2;
+			border-radius: 4px;
+			padding: 20px;
+			margin: 20px auto;
+			width: 320px;
+			div.title-container {
+				overflow: hidden;
+				padding: 10px 20px 20px;
+				div {
+					width: 49%;
+					height: 36px;
+				}
+				div.accout {
+					float: left;
+					line-height: 36px;
+					text-align: center;
+					border-bottom: 2px solid $bg;
+				}
+				div.card {
+					float: right;
+					.el-button {
+						background-color: #c01a0c;
+						color: #fff;
+						// border: none;
+						// padding: none;
+						// height: 30px;
+						// line-height: 30px;
+					}
+				}
+			}
+
+			div.formDiv {
+				padding: 0 10px;
+				div { display: inline-block; line-height: 40px;}
+				div.name {
+					width: 20%;
+					line-height: 40px;
+
+				}
+				div.input {
+					width: 80%;
+					input: {
+						border: none;
+						width: 100%;
+					}
+				}
+			}
+
+			div.submit {
+				padding-top: 20px;
+				text-align: center;
+				.el-button {
+					background-color: $bg;
+				}
+			}
+		}
+		.loginFooter {
+			position: fixed;
+			width: 100%;
+			bottom: 30px;
+			text-align: center;
+			color: #f2f2f2;
+			font-size: 12px;
+			line-height: 20px;
+		}
+		
+	}
+</style>

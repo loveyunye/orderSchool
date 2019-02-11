@@ -1,0 +1,92 @@
+<template>
+  <div class="menuNew">
+    <el-row :gutter="20">
+      <el-col :span="3">
+        <div class="header">
+          我的
+        </div>
+        <ul>
+          <li v-for="(item,index) in routerArr" :key="index">
+            <router-link  :to="item.path" class="linkBtn">
+               {{item.name}}
+            </router-link>
+          </li>
+          <li>
+            <router-link  to="/personal/menu/reservation/present" class="linkBtn">
+              <i class="el-icon-caret-right"></i>  当前预约
+            </router-link>
+          </li>
+          <li>
+            <router-link  to="/personal/menu/reservation/history" class="linkBtn">
+              <i class="el-icon-caret-right"></i>  预约记录
+            </router-link>
+          </li>
+        </ul>
+
+      </el-col>
+      <el-col :span="21">
+        <router-view />
+
+      </el-col>
+    </el-row>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'newMenu',
+  data() {
+    return {
+      routerArr: [{
+        path: '/personal/menu/message',
+        name: '个人信息'
+      },{
+        path: '/personal/menu/reservation',
+        name: '预约情况'
+      }],
+
+      orderRouter: [
+        {
+          path: '/personal/menu/reservation/present',
+          name: '当前预约'
+        },{
+          path: '/personal/menu/reservation/history',
+          name: '预约记录'
+        }
+      ]
+
+
+    }
+  }
+}
+</script>
+
+<style type="text/scss" lang="scss" scoped>
+	$color: #c01a0c;
+
+  .menuNew {
+    .header {
+      background-color: #c01a0c;
+      color: #fff;
+      line-height: 43px;
+      padding-left: 15px;
+      font-size: 16px;
+    }
+
+    ul {
+      background-color: #fff;
+      height: 300px;
+      padding: 5px 17px 0;
+      li {
+        line-height: 45px;
+        border-bottom: 1px dotted #999;
+        .linkBtn {
+          color: #333;
+        }
+        .active {
+          color: $color;
+        }
+      }
+    }
+  }
+</style>

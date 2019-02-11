@@ -1,0 +1,146 @@
+<template>
+	<div>
+    <div class="header">
+			公告通知
+		</div>
+		<!-- <el-row :gutter="20">
+			<el-col :span="8" v-for="(item,index) in newsList" :key="index">
+				<div class="newItem" @click="newDetail(index)">
+					<div class="title">{{item.title}}</div>
+					<div class="time">{{item.createTime}}</div>
+					<div class="content">{{item.abstractContent}}</div>
+					<div class="create">By {{item.baseModel.creatorName}}</div>
+				</div>
+			</el-col>
+		</el-row> -->
+
+		<ul class="newsClass">
+			<li v-for="(item,index) in newsList" :key="index" @click="newDetail(index)">
+				<i class="el-icon-caret-right"></i> {{item.title}}  <div>{{item.createTime}}</div> 
+			</li>
+		</ul>
+
+		<el-pagination
+			class="pageChange"
+			@current-change="changeCurrent"
+			background
+			layout="prev,pager,next"
+			:pager-count="5"
+			:page-size="9"
+			:total="totalNews"
+			
+		>
+		</el-pagination>
+	</div>
+</template>
+
+<script type="text/javascript">
+	import ajax from '@/utils/ajax'
+	export default {
+		data() {
+			return {
+				newsList:[],
+				searchParams: {
+					keys:{
+						type: '公告'
+					},
+					length:9,
+					start:0
+				},
+				totalNews: 0
+			}
+		},
+		methods: {
+			newDetail(index){
+				let id = this.newsList[index]['newsId']
+				// console.log(this.totalNews)
+				this.$router.push({ path: '/news/notice/noticeDetail/'+id })
+			},
+			changeCurrent(value){
+				this.searchParams.start = 9 * (value-1)
+				this.getNewsList()
+			},
+			getNewsList() {
+				ajax('/portal/common/getClassNewsByPage.do',this.searchParams,'all').then(res => {
+					// console.log(res)
+					this.newsList = res.aaData
+					this.totalNews = res.recordsTotal
+				})
+			}
+		},
+		mounted() {
+			this.getNewsList()
+		}
+
+	}
+	
+</script>
+
+<style lang='scss'>
+	$bannerColor: #c01a0c;
+
+  .header {
+      background-color: #c01a0c;
+      color: #fff;
+      line-height: 43px;
+      padding-left: 15px;
+      font-size: 16px;
+    }
+
+	.newsClass {
+		background-color: #fff;
+		min-height: 265px;
+		padding: 20px 20px;
+		li {
+			cursor: pointer;
+			border-bottom: dotted 1px #999;
+			line-height: 40px;
+			div {
+				float: right;
+			}
+		}
+	}	
+	.newItem {
+		background-color: #fff;
+		height: 200px;
+		margin-top: 20px;
+		padding: 5px 16px;
+		border-radius: 2px;
+		.title {
+			font-size: 18px;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			width: 300px;
+			display: block;
+			// float: left;
+			// color: #222;
+			line-height: 40px;
+			font-weight: bolder;
+		}
+
+		.content {
+			height: 90px;
+			overflow: hidden;
+			padding-top: 10px;
+			color: #545454;
+		}
+		
+
+	}
+	.newItem:hover {
+		box-shadow: 1px 1px 20px  #046697;
+		cursor: pointer;
+		.title {
+			color: #006999;
+		}
+	}
+	.pageChange {
+		text-align: center;
+    margin: 50px 0;
+	}
+	.el-pagination.is-background .el-pager li:not(.disabled).active {
+			background-color: $bannerColor;
+			color: #fff;
+		}
+</style>

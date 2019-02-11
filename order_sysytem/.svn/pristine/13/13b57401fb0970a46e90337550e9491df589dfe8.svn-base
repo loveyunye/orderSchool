@@ -1,0 +1,110 @@
+<template>
+  <div>
+    <xu-dialog :showDialog='dialogDisplay'  @close="closeDetail" class="dialogBaseDetail">
+			<div class="dialog_header">
+          <el-col :span="14">
+            基地名称： {{ baseDetail.name}}
+          </el-col>
+          <el-col :span="10">
+            基地地址： {{baseDetail.addressName}}
+          </el-col>
+      </div>
+      <div class="dialog_content">
+        <div class="block">
+          <div class="title">基地简介</div>
+          <div class="word">
+            {{baseDetail.description?baseDetail.description:'暂无简介'}}
+          </div>
+        </div>
+      </div>
+
+      <!-- <div class="btn">
+        <el-button type="primary" @click="closeDetail">我已阅读，继续预约</el-button>
+      </div> -->
+      <div class="img" style="max-height: 300px;overflow: scroll;">
+
+        <img :src="item" alt="" v-for="(item,index) in baseDetail.photos" :key="index" width="100%"/>
+        
+      </div>
+		</xu-dialog>
+  </div>
+</template>
+<script>
+  import XuDialog from './XuDialog.vue'
+  import ajax from '@/utils/ajax'
+
+  export default {
+    props:['dialogShow','baseId'],
+    data() {
+      return {
+        dialogDisplay:true,
+        baseDetail: {photos:[]},
+        baseDialogID:0,
+
+
+      }
+    },
+    methods: {
+      closeDetail() {
+        this.$emit('close')
+      }
+    },
+    watch: {
+      dialogShow(val) {
+        this.dialogDisplay = val
+      },
+      baseId(val) {
+        if(val) {
+          ajax('/portal/common/getBaseDetailedById.do',{
+            id: val
+          },'.dialogBaseDetail').then(res => {
+            this.baseDetail = res.data
+            console.log(this.baseDetail)
+          })
+        }
+      }
+    },
+    mounted() {
+      this.dialogDisplay = this.dialogShow?true:false
+    },
+    components:{
+      XuDialog
+    }
+  }
+</script>
+
+<style lang="scss">
+	$bannerColor: #c01a0c;
+
+  .dialogBaseDetail {
+    .dialog_header {
+      background-color: $bannerColor;
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
+      padding: 47px 50px 40px;
+      color: #fff;
+      line-height: 24px;
+      
+    }
+    .dialog_content {
+      padding: 20px 50px 30px;
+      div.block {
+        padding: 10px 0 10px;
+        .title {
+          color: #333;
+          font-size: 16px;
+          padding-bottom: 10px;
+        }
+        .word {
+          color: #555;
+        }
+      }
+    }
+    .img {
+      // width: 100%;
+      padding: 0 20px 20px;
+    }
+  }
+    
+</style>
+

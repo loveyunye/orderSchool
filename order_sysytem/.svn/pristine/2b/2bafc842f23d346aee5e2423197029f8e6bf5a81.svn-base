@@ -1,0 +1,201 @@
+<template>
+	<div class="present">
+		<el-table :data="presentCourseList" style="width:100%" border class="routePage_table">
+			<el-table-column v-for="(item,index) in itemArr" :key="index" :width="itemWidth[index]" :label="cnameArr[index]" align="center" :prop="itemArr[index]">
+				<template slot-scope="scope">
+					<span v-html="scope.row[item]" :class="index===1||index===3?'linkItem':'' " v-on:click="detailItem(scope.$index,scope.row,item)"></span>
+				</template>
+			</el-table-column>
+		</el-table>
+		
+
+		
+
+		
+
+		<comment :dialogShow="dialogOrderShow"  :routeId="routeIdDialog" @close="dialogOrderShow=false" @refresh="refresh"></comment>
+
+		<myComment :dialogShow="dialogMyCommentShow"  :routeId="routeIdDialogMy" @close="dialogMyCommentShow=false" ></myComment>
+
+		<RouteDetail :routeDetail='routeDetail' :showDetail="dialogDetail" @close="dialogDetail=false"></RouteDetail>
+
+	</div>
+</template>
+
+<script type="text/javascript">
+
+  /**
+   * 第一期完成之后，大概时隔两个月 第二期页面简直 像是了全部修改
+   * 这一块改的太多了
+   */
+
+	import ajax from '@/utils/ajax'
+	import XuDialog from '@/components/XuDialog.vue'
+	import RouteDetail from '@/components/RouteDetail'
+
+	import comment from '@/components/comment'
+	import myComment from '@/components/myComment'
+
+
+	export default {
+		data(){
+			return {
+				cnameArr: ['课程名称','预约教学时间','人数','包含基地','所属区域','宣教员'],
+				itemArr: ['courseSerialNumber','reservaRouteDate','reservaRouteScale','reservaRoutePlace','reservaRoutePlace','reservaRouteTeacherName'],
+				itemWidth: ['120','300','200','300','110','110'],
+				presentCourseList:[],
+
+				formUser: {
+					reserveCode: '',
+					reserveName: '',
+					reserveCommunity: '',
+					reservePhone: '',
+					reserveEmail: ''
+				},
+				dialogUpdate: false,
+
+				newRouter:{imgSrc:''},
+				noNewRoute:false,
+
+				historyRouters:[],
+				// dialog_route_order
+				dialogOrderShow:false,
+				routeIdDialog: 0,
+
+				// dialog_route_detail
+				routeDetail: {teachArr:[]},
+				dialogDetail: false,
+
+
+				dialogMyCommentShow: false,
+				routeIdDialogMy: 0
+
+			}
+			
+		},
+		methods: {
+			refresh() {
+				this.dialogOrderShow=false
+				this.getNewestReserve()
+				this.getHistoryReserve()
+			},
+			showMyComment(id) {
+				this.routeIdDialogMy = id
+				this.dialogMyCommentShow = true
+			},
+			myComment(id) {
+				this.routeIdDialog = id
+				this.dialogOrderShow = true
+			},
+			reserveDetail(id) {
+				ajax('/portal/reserve/getReservaRouteDetailed.do',{
+					id: id
+				},'all').then(res => {
+					ajax('/portal/common/getRouteLaunchedId.do',{
+						id: res.data.route.routeLaunchedId
+					}).then(resRoute => {
+						this.routeDetail = resRoute
+						this.routeDetail.teachArr = resRoute.courseTeacherIds.map(item => {
+							return item.teacherName +'&'+ item.teacherId
+						})
+						this.dialogDetail = true 
+					})
+				})
+			},
+
+			cancelReserve() {
+				this.$confirm('确定取消预约吗?','提示',{
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(()=>{
+					ajax('/portal/reserve/cancelReserve.do',{
+						classReservaRoute: {
+							classReservaRouteId: this.newRouter.class_reserva_route_id
+						}
+					}).then(res => {
+						// console.log(res)
+						this.getNewestReserve()
+						this.getHistoryReserve()
+					})
+				}).catch(()=>{
+					// 取消退出 
+				})
+				
+			},
+			getNewestReserve() {
+				ajax('/portal/reserve/showNewestReserve.do',false,false).then(res => {
+					if(res && JSON.stringify(res) !== "{}") {
+						this.newRouter = res
+
+						if(this.newRouter.check_status == "待审核"){
+							this.newRouter.imgSrc = "wait"
+						}else if(this.newRouter.check_status == "通过"){
+							this.newRouter.imgSrc = "pass"
+						}else {
+							this.newRouter.imgSrc = "noPass"
+						}
+					}else {
+						// console.log(false)
+						this.noNewRoute = true
+					}
+				})
+			},
+			getHistoryReserve() {
+				ajax('/portal/reserve/showHistoryReserve.do',false,false).then(res => {
+					
+					if(res) {
+						this.historyRouters = res
+						this.historyRouters.forEach(item => {
+							if(item.reserva_status==0){
+								item.imgSrc = 'cancel'
+							}else {
+								if(item.check_status == "待审核"){
+									item.imgSrc = "wait"
+								}else if(item.check_status == "通过"){
+									item.imgSrc = "pass"
+								}else {
+									item.imgSrc = "noPass"
+								}
+							}
+						})
+					}else {
+						// console.log(false)
+					}
+				})
+			},
+		},
+		mounted() {
+			ajax('/portal/reserve/findNowReserve.do',{start:0,length:10},false).then(res => {
+				this.presentCourseList = res.aaData
+				console.log(this.presentCourseList)
+			})
+		},
+		components:{
+			XuDialog,comment,RouteDetail,myComment
+		}
+	}
+	
+</script>
+
+<style type="text/scss" lang="scss" >
+	// @import '../../style/personal.scss';
+	$bannerColor: #c01a0c;
+	.present {
+		.el-table thead {
+			background-color: $bannerColor;
+			color: #fff;
+			font-weight: normal;
+		}
+		.el-table th {
+			background-color: $bannerColor;
+			// padding: 6px 0;
+			font-weight: normal;
+		}
+		.el-table td, .el-table th {
+			padding: 10px 0;
+		}	
+		// .el-table td { padding: 11px 0;.linkItem{text-decoration: underline;cursor: pointer;}}
+	}
+	
+</style>

@@ -1,0 +1,109 @@
+<template>
+  <div>
+    <xu-dialog :showDialog='dialogDisplay'  @close="closeDetail" class="dialogBaseDetail" width="850px">
+			<div class="dialog_header">
+          <el-col :span="12">
+            基地名称： {{ baseDetail.name}}
+          </el-col>
+          <el-col :span="12">
+            基地地址： {{baseDetail.fullAddressName}}
+          </el-col>
+      </div>
+      <div class="dialog_content" style="max-height: 500px;overflow-y: auto;">
+        <div class="block">
+          <div class="title">基地简介</div>
+          <div class="word">
+            {{baseDetail.description?baseDetail.description:'暂无简介'}}
+          </div>
+        </div>
+
+        <el-row :gutter="20">
+          <el-col v-for="(item,index) in baseDetail.photos" :key="index" :span="12">
+            <img :src="item" alt="" width="100%"/>
+          </el-col>
+        </el-row>
+      </div>
+
+      <!-- <div class="btn">
+        <el-button type="primary" @click="closeDetail">我已阅读，继续预约</el-button>
+      </div> -->
+      
+		</xu-dialog>
+  </div>
+</template>
+<script>
+  import XuDialog from './XuDialog.vue'
+  import ajax from '@/utils/ajax'
+
+  export default {
+    props:['dialogShow','baseId'],
+    data() {
+      return {
+        dialogDisplay:true,
+        baseDetail: {photos:[]},
+        baseDialogID:0,
+
+
+      }
+    },
+    methods: {
+      closeDetail() {
+        this.$emit('close')
+      }
+    },
+    watch: {
+      dialogShow(val) {
+        this.dialogDisplay = val
+      },
+      baseId(val) {
+        if(val) {
+          ajax('/portal/common/getBaseDetailedById.do',{
+            id: val
+          },false).then(res => {
+            this.baseDetail = res.data
+            console.log(this.baseDetail)
+          })
+        }
+      }
+    },
+    mounted() {
+      this.dialogDisplay = this.dialogShow?true:false
+    },
+    components:{
+      XuDialog
+    }
+  }
+</script>
+
+<style lang="scss">
+	$bannerColor: #c01a0c;
+
+  .dialogBaseDetail {
+    .dialog_header {
+      background-color: $bannerColor;
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
+      padding: 20px 50px 40px;
+      color: #fff;
+      line-height: 24px;
+      
+    }
+    .dialog_content {
+      padding: 20px 50px 30px;
+      div.block {
+        padding: 10px 0 10px;
+        .title {
+          color: #333;
+          font-size: 16px;
+          padding-bottom: 10px;
+        }
+        .word {
+          color: #555;
+        }
+      }
+    }
+    
+  }
+    
+</style>
+

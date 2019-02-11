@@ -1,0 +1,111 @@
+/**
+ * created by xuin
+ * date 2018-09-10
+ */
+import axios from 'axios'
+import { setToken, setMessage, getToken, removeToken ,getUserName,setUserName} from '@/utils/auth'
+import ajax from '@/utils/ajax'
+import Cookie from 'js-cookie'
+
+const user = {
+  state: {
+    user: '',
+    userDetail: {},
+    token: getToken(),
+    name: getUserName()
+  },
+  mutations: {
+    SET_USER: (state, name) => {
+      state.user = name
+    },
+    SET_USERDETAIL: (state, message) => {
+      state.userDetail = message
+    },
+    SET_TOKEN: (state, token) => {
+      state.token = token
+    },
+    SET_NAME: (state,name) => {
+      state.name = name
+    }
+  },
+  actions: {
+    LoginUserInfo({commit}, userInfo){
+      return new Promise((resolve,reject) => {
+        axios.post('/slianclass-pc-web/j_spring_security_check.do?password='+userInfo.password+'&userName='+userInfo.userName+'&type=客户').then(res=>{
+          let userMessage = res.data
+          // 判断登录客户类型
+          if(userMessage.status) {
+            setUserName(userMessage.reserve.reserveName) 
+            commit('SET_NAME',userMessage.reserve.reserveName)
+
+            if(userMessage.user.type == '客户') {
+              setToken('admin')
+              
+              // setMessage(JSON.stringify(user))
+              resolve('user')
+              commit('SET_TOKEN','admin')
+              localStorage.setItem('userDetail',JSON.stringify(userMessage))
+            }else {
+              Cookie.set('adminAccount',JSON.stringify(userInfo),{ expires: 0.1 })
+              resolve('admin')
+            }
+          }else {
+            resolve(userMessage)
+          }
+        })
+      })
+    },
+    LogOut({commit,state}){
+      return new Promise((resolve,reject) => {
+        commit('SET_TOKEN','')
+        removeToken()
+        resolve()
+      })
+    },
+
+
+    // 浙大统一身份登录   设置信息
+    setZDUniversity({commit},userMessage) {
+      console.log(userMessage)
+      if(userMessage.status) {
+        if(userMessage.user.type == '客户') {
+          setToken('admin')
+          commit('SET_TOKEN','admin')
+          localStorage.setItem('userDetail',JSON.stringify(userMessage))
+        }else {
+          Cookie.set('adminAccount',JSON.stringify(userMessage),{ expires: 0.1 })
+        }
+      }
+    },
+
+
+    GetUserInfo({commit,state}){
+      return new Promise((resolve) => {
+        // 判断是否有 Token
+        if(state.token) {
+          // 判断是否已经获取用户信息
+          // if(!localStorage.getItem('userInfo')) {
+            ajax('/portal/user/getReserveMyBaseInfo.do',false,false).then(res => {
+              localStorage.setItem('userInfo',JSON.stringify(res))
+              commit('SET_NAME',res.data.reserveName)
+
+              resolve(true)
+            })
+          // }else {
+          //   resolve(true)
+          // }
+        } else {
+          resolve(false)
+        }
+      })
+    },
+
+    // 设置名字
+    setusername({commit},name){
+      setUserName(name) 
+      commit('SET_NAME',name)
+    }
+  }
+}
+
+export default user

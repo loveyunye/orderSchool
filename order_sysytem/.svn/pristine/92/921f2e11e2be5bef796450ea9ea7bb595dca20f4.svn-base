@@ -1,0 +1,152 @@
+<template>
+  <div class="nav-container">
+    <div class="inner"> 
+      <div class="logo">
+        <img src="../../assets/logo.png" alt="" height="75px;">
+      </div>
+      <div class="title">学生党建与思政现场教学基地预约系统</div>
+      <div class="link">
+        <router-link v-for="(item,index) in routerArr" :key="index" :to="item.path" class="linkBtn">{{item.name}}</router-link>
+        <span v-if="token" style="margin-left:50px;">欢迎您,{{name}}</span> &nbsp;
+        <span @click="logOut" v-if="token" style="cursor: pointer;color:blue;text-decoration: underline;">
+          <!-- <img src="../../assets/logout.png" height="20px;" alt=""> -->
+          退出
+        </span>
+        <span @click="logIn" v-else  style="cursor:pointer;margin-left:50px; text-decoration: underline;">登录</span>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import { mapGetters } from 'vuex'
+import Cookie from 'js-cookie'
+import ajax from '@/utils/ajax'
+
+export default {
+  data() {
+    return {
+       routerArr:[{
+         path: '/dashboard',
+         name: '首页'
+       },
+      //  {
+      //    path: '/news',
+      //    name: '资讯'
+      //  },
+       {
+         path: '/convention',
+         name: '预约'
+       },{
+         path: '/personal',
+         name: '我的'
+       }],
+       token:Cookie.get('Token-Auth'),
+      //  name: ''
+    }
+  },
+  computed:{
+    // name() {
+    //   console.log(this.token)
+    //   if(this.token){
+    //     ajax('/portal/user/getReserveMyBaseInfo.do',false,false).then(res => {
+    //       localStorage.setItem('userInfo',JSON.stringify(res))
+    //       console.log(res)
+    //       return   res.reserveName
+    //     })
+    //   } else {
+    //     return ''
+    //   }
+    // }
+    ...mapGetters([
+      'name'
+    ])
+  },
+  methods: {
+    logIn(){
+      this.$router.push({ path: '/login'})
+
+    },
+    logOut() {
+      this.$confirm('确定退出吗?','提示',{
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(()=>{
+        // ajax('/slianclass-pc-web/logout.do').then(res => {
+          this.$store.dispatch('LogOut').then(()=>{
+            this.$router.push({ path: '/'})
+            this.token = Cookie.get('Token-Auth')
+            window.location.href ='/slianclass-pc-web/logout.do'
+          })
+        // })
+
+        
+      }).catch(()=>{
+        // 取消退出 
+      })
+    },
+    getUserInfo() {
+      if(this.token){
+        ajax('/portal/user/getReserveMyBaseInfo.do',false,false).then(res => {
+          localStorage.setItem('userInfo',JSON.stringify(res))
+          // this.name = res.data.reserveName
+        })
+      }
+    }
+  },
+  mounted() {
+    this.getUserInfo()
+  }
+  
+}
+</script>
+<style lang="scss" scoped>
+  .nav-container {
+    background-color: #fff;
+    border-bottom: 1px #cecece solid;
+    
+    .inner {
+      width: 1300px;
+      margin: 0 auto;
+      padding: 5px 0;
+      overflow: hidden;
+      div.logo,div.title {
+        float: left;
+       
+      }
+      div.logo { margin-right: 30px;}
+      div.title {
+        line-height: 75px;
+        font-size: 25px;
+        font-family: "KaiTi"," DFKai-SB","STKaiti";
+        color: #515151;
+        // font-family:"Times New Roman",Georgia,Serif;
+      }
+      div.link {
+        float: right;
+        line-height: 75px;
+
+        .linkBtn {
+          color: #000;
+          display: inline-block;
+          margin-left: 20px;
+          line-height: 20px;
+          // height: 30px;
+          padding: 5px 10px;
+          border-radius: 4px;
+        }
+        .linkBtn:nth-child(4) {
+          margin-right: 30px;
+        }
+        .active {
+          color: #fff;
+          background-color: #e83829;
+        }
+
+      }
+
+      
+
+    }
+  }
+</style>

@@ -1,0 +1,90 @@
+<template>
+	<div class="newsDetail">
+		<header>
+      <div class="title">
+        {{newsObject.title}}
+      </div>
+      <div class="message">
+        发布日期: {{newsObject.createTime}}  &nbsp;&nbsp;浏览量: {{newsObject.readNum}}
+      </div>
+    </header>
+    <div class="content" v-html="newsObject.content" style="line-height: 2;"></div>
+    <div class="footer">
+      <!-- <div v-if="searchParams.start!=0" @click="changePage(false)">上一遍</div>
+      <div v-if="!lastNews" @click="changePage(true)">下一遍</div> -->
+      <span @click="changePage(previousNews.newsId)" v-if="previousNews" class="next">下一篇：{{previousNews.title}}</span>
+      <span v-else class="next">下一篇：无</span>
+      <span @click="changePage(nextNews.newsId)" v-if="nextNews" class="pre">上一篇：{{nextNews.title}}</span>
+      <span v-else class="pre">上一篇：无</span>
+    </div>
+	</div>
+</template>
+
+<script type="text/javascript">
+	import ajax from '@/utils/ajax'
+	export default {
+    data() {
+      return {
+        newsObject: {},
+        newsId: '',
+        previousNews:null,
+        nextNews:null
+      }
+    },
+    methods: {
+      changePage(newsId) {
+				this.$router.push({ path: '/news/notice/noticeDetail/'+newsId })
+      },
+      getNews() {
+        ajax('/portal/common/getClassNewsByNewsId.do',{
+          newsId : this.newsId,
+          type: '公告',
+        },'all').then(res => {
+          this.newsObject = res.nowNews
+          this.previousNews = res.previousNews
+          this.nextNews = res.nextNews
+				})
+      }
+      
+    },
+    created() {
+      this.newsId = +this.$route.params.id
+      this.getNews()
+    }
+	}
+	
+</script>
+
+<style type="text/scss" lang="scss" scoped>
+	.newsDetail {
+    background-color: #fff;
+    header {
+      padding: 50px 0 20px;
+      text-align: center;
+      .title {
+        font-size: 24px;
+        font-weight: 500;
+      }
+      .message {
+        line-height: 30px;
+        font-size: 12px;
+        color: #555;
+      }
+    }
+    .content {
+      padding: 0 40px;
+    }
+    .footer {
+      padding: 0 40px;
+      line-height: 90px;
+      overflow: hidden;
+      span {
+        display: inline-block;
+        cursor: pointer;
+      }
+      span.pre { float: left}
+      span.next { float: right}
+    }
+    
+  }
+</style>

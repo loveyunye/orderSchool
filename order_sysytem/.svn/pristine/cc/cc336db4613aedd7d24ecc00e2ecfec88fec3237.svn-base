@@ -1,0 +1,292 @@
+<template>
+	<div class="personal">
+		<el-row :gutter="70">
+			<el-col :span="12" class="personMes">
+				<div class="title">个人信息</div>
+				<div class="block">
+					<!-- <div class="photo">
+						<img src="../../assets/avatar2.png" alt="" width="100%" >
+					</div> -->
+					<ul>
+						<li>学号：{{formUser.reserveCode}}</li>
+						<li>姓名：{{formUser.reserveName}}</li>
+						<li>所在学院与党支部：{{formUser.reserveCommunity}}</li>
+						<li>联系方式：{{formUser.reservePhone}}</li>
+						<li>邮箱：{{formUser.reserveEmail}}</li>
+					</ul>
+					<div class="sign edit" @click="dialogUpdate=true"><i class="el-icon-edit-outline"></i></div>
+				</div>
+			</el-col>
+			<el-col :span="12"  class="newRouter">
+				<div class="title">当前预约</div>
+				<div class="block" v-if="!noNewRoute">
+					<div class="sign">
+						<div :class="newRouter.imgSrc"></div>
+
+					</div>
+					<ul>
+						<li>课程编号：{{newRouter.route_serial_number}}</li>
+						<li>党课主题：{{newRouter.theme_name}}</li>
+						<li>预约人/支部：{{formUser.reserveName}}/{{formUser.reserveCommunity}}</li>
+						<li>预约时间：{{newRouter.create_time}}</li>
+					</ul>
+					<div class="btn">
+						<el-row>
+							<el-col :span="8" ><el-button size="medium" @click="reserveDetail(newRouter.class_reserva_route_id)">线路详情</el-button></el-col>
+							<el-col :span="8" ><el-button size="medium" @click="cancelReserve">取消预约</el-button></el-col>
+							<el-col :span="8"  v-if="newRouter.check_status=='通过'"><el-button size="medium" @click="myComment(newRouter.class_reserva_route_id)" >反馈点评</el-button></el-col>
+						</el-row>
+					</div>
+
+				</div>
+
+				<div v-else>最近暂无预约</div>
+			</el-col>
+		</el-row>
+
+		<!-- 历史线路 -->
+		<el-row :gutter="70" class="historyRoute">
+			<el-col :span="24" style="margin-top:20px;"><div class="title">历史线路</div></el-col>
+			<el-col :span='12' v-for="(item,index) in historyRouters" :key="index" style="margin-bottom:20px;">
+				<div class="block">
+					<div class="sign">
+						<!-- {{item.check_status}} -->
+
+						<!-- <img :src="'../static/images'+item.imgSrc+'.png'" alt="" >
+						<img src="../../assets/wait.png" alt="" > -->
+						<div :class="item.imgSrc"></div>
+					</div>
+
+					<ul>
+						<li>课程编号：{{item.route_serial_number}}</li>
+						<li>党课主题：{{item.theme_name}}</li>
+						<li>预约人/支部：{{formUser.reserveName}}/{{formUser.reserveCommunity}}</li>
+						<li>预约时间：{{item.create_time}}</li>
+					</ul>
+					<div class="btn">
+						<el-row>
+							<el-col :span="8" ><el-button size="medium" @click="reserveDetail(item.class_reserva_route_id)">线路详情</el-button></el-col>
+							<el-col :span="8" ><el-button size="medium" @click="showMyComment(item.class_reserva_route_id)" v-if="item.reserva_status&&item.check_status!=='不通过'">我的点评</el-button></el-col>
+						</el-row>
+					</div>
+				</div>
+				
+				
+			</el-col>
+
+			<el-col v-if="historyRouters.length==0">
+				暂无历史线路
+			</el-col>
+		</el-row>
+
+		<xu-dialog :showDialog='dialogUpdate'  @close="dialogUpdate=false" class="userDialog">
+			<div class="dialog_header">
+				修改
+			</div>
+			<div class="dialog_content">
+				<form>
+					<table style="width:100%" cellpadding="0" cellspacing="0" class="userTable">
+						<tr>
+							<td style="width:20%">学号：</td>
+							<td style="width:40%"><input v-model="formUser.reserveCode"/></td>
+						</tr>
+						<tr>
+							<td>姓名：</td>
+							<td><input v-model="formUser.reserveName"/></td>
+						</tr>
+						<tr>
+							<td>所在学院与党支部：</td>
+							<td><input v-model="formUser.reserveCommunity"/></td>
+						</tr>
+						<tr>
+							<td>联系方式：</td>
+							<td><input v-model="formUser.reservePhone"/></td>
+						</tr>
+						<tr>
+							<td>邮箱：</td>
+							<td><input v-model="formUser.reserveEmail"/></td>
+						</tr>
+					</table>
+
+					<div class="update">
+						<el-button type="primary" @click="updateUserMsg">修改</el-button>
+					</div>
+				</form>
+			</div>
+		</xu-dialog>
+
+		<comment :dialogShow="dialogOrderShow"  :routeId="routeIdDialog" @close="dialogOrderShow=false" @refresh="refresh"></comment>
+
+		<myComment :dialogShow="dialogMyCommentShow"  :routeId="routeIdDialogMy" @close="dialogMyCommentShow=false" ></myComment>
+
+		<RouteDetail :routeDetail='routeDetail' :showDetail="dialogDetail" @close="dialogDetail=false"></RouteDetail>
+
+	</div>
+</template>
+
+<script type="text/javascript">
+	import ajax from '@/utils/ajax'
+	import XuDialog from '@/components/XuDialog.vue'
+	import RouteDetail from '@/components/RouteDetail'
+
+	import comment from '@/components/comment'
+	import myComment from '@/components/myComment'
+
+
+	export default {
+		data(){
+			return {
+				formUser: {
+					reserveCode: '',
+					reserveName: '',
+					reserveCommunity: '',
+					reservePhone: '',
+					reserveEmail: ''
+				},
+				dialogUpdate: false,
+
+				newRouter:{imgSrc:''},
+				noNewRoute:false,
+
+				historyRouters:[],
+				// dialog_route_order
+				dialogOrderShow:false,
+				routeIdDialog: 0,
+
+				// dialog_route_detail
+				routeDetail: {teachArr:[]},
+				dialogDetail: false,
+
+
+				dialogMyCommentShow: false,
+				routeIdDialogMy: 0
+
+			}
+			
+		},
+		methods: {
+			refresh() {
+				this.dialogOrderShow=false
+				this.getNewestReserve()
+				this.getHistoryReserve()
+			},
+			showMyComment(id) {
+				this.routeIdDialogMy = id
+				this.dialogMyCommentShow = true
+			},
+			myComment(id) {
+				this.routeIdDialog = id
+				this.dialogOrderShow = true
+			},
+			reserveDetail(id) {
+				ajax('/portal/reserve/getReservaRouteDetailed.do',{
+					id: id
+				},'all').then(res => {
+					ajax('/portal/common/getRouteLaunchedId.do',{
+						id: res.data.route.routeLaunchedId
+					}).then(resRoute => {
+						this.routeDetail = resRoute
+						this.routeDetail.teachArr = resRoute.courseTeacherIds.map(item => {
+							return item.teacherName +'&'+ item.teacherId
+						})
+						this.dialogDetail = true 
+					})
+				})
+			},
+
+			cancelReserve() {
+				this.$confirm('确定取消预约吗?','提示',{
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(()=>{
+					ajax('/portal/reserve/cancelReserve.do',{
+						classReservaRoute: {
+							classReservaRouteId: this.newRouter.class_reserva_route_id
+						}
+					}).then(res => {
+						// console.log(res)
+						this.getNewestReserve()
+						this.getHistoryReserve()
+					})
+				}).catch(()=>{
+					// 取消退出 
+				})
+				
+			},
+			getUserMsg() {
+				ajax('/portal/user/getReserveMyBaseInfo.do',false,false).then(res => {
+					this.formUser = res
+				})
+			},
+			getNewestReserve() {
+				ajax('/portal/reserve/showNewestReserve.do',false,false).then(res => {
+					if(res && JSON.stringify(res) !== "{}") {
+						this.newRouter = res
+
+						if(this.newRouter.check_status == "待审核"){
+							this.newRouter.imgSrc = "wait"
+						}else if(this.newRouter.check_status == "通过"){
+							this.newRouter.imgSrc = "pass"
+						}else {
+							this.newRouter.imgSrc = "noPass"
+						}
+					}else {
+						// console.log(false)
+						this.noNewRoute = true
+					}
+				})
+			},
+			getHistoryReserve() {
+				ajax('/portal/reserve/showHistoryReserve.do',false,false).then(res => {
+					
+					if(res) {
+						this.historyRouters = res
+						this.historyRouters.forEach(item => {
+							if(item.reserva_status==0){
+								item.imgSrc = 'cancel'
+							}else {
+								if(item.check_status == "待审核"){
+									item.imgSrc = "wait"
+								}else if(item.check_status == "通过"){
+									item.imgSrc = "pass"
+								}else {
+									item.imgSrc = "noPass"
+								}
+							}
+						})
+					}else {
+						// console.log(false)
+					}
+				})
+			},
+			updateUserMsg() {
+				ajax('/portal/user/updateReserveMyBaseInfo.do',{
+					classReserve: this.formUser
+				},false).then(res => {
+					// this.formUser = res
+					// console.log(res)
+					if(res.code == 0){
+						this.$message.success(res.message)
+						this.dialogUpdate = false
+					}else {
+						this.$message.error(res.message)
+					}
+				})
+			},
+		},
+		mounted() {
+			this.getUserMsg()
+			this.getNewestReserve()
+			this.getHistoryReserve()
+		},
+		components:{
+			XuDialog,comment,RouteDetail,myComment
+		}
+	}
+	
+</script>
+
+<style type="text/scss" lang="scss">
+	@import '../../style/personal.scss';
+</style>

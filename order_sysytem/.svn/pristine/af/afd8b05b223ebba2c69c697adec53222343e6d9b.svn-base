@@ -1,0 +1,255 @@
+<template>
+  <div >
+    
+    <div class="course-date">
+
+
+      <xu-dialog :showDialog='dialogDisplay'  @close="closeDetail" class="dialogDateDetail" :width="'600px'">
+
+        <div class="dialog_header">
+          可预约日期
+        </div>
+        <!-- <div class="dialog_body"> -->
+          <ele-calendar 
+            :data="[]"
+            prop="date"
+            @pick="selectDate"
+            :disabledDate="calendarDisabledDate"
+            :render-content="renderContent"
+          >
+          <!-- <template slot="after">
+            <div style="text-align: right;padding: 10px 0px;border-bottom: 1px solid #e4e7ed;">
+              <el-tag style="background-color: #f5f7fa;opacity: 1;color: #c0c4cc;margin-right:10px;border: none;border-radius: 0;">禁选</el-tag>
+              <el-tag style="background-color: #E6A23C;opacity: 1;color: #606266;margin-right:10px;border: none;border-radius: 0;">已满</el-tag>
+              <el-tag style="background-color: #42b983;color: #606266;margin-right:10px;border: none;border-radius: 0;" type="success">可选</el-tag>
+            </div>
+          </template> -->
+          </ele-calendar>
+        <!-- </div> -->
+        
+        <div class="dialog_footer">
+           <div><div style="display: inline-block;
+                        border-radius: 50%;
+                        height: 10px;
+                        width: 10px;
+                        background-color: #42b983"></div> 可预约</div>
+           <div><div style="display: inline-block;
+                        border-radius: 50%;
+                        height: 10px;
+                        width: 10px;
+                        background-color: #E6A23C"></div> 预约已满</div>
+           <div><div style="display: inline-block;
+                        border-radius: 50%;
+                        height: 10px;
+                        width: 10px;
+                        background-color: #bbb"></div> 不可预约</div>
+        </div>
+      </xu-dialog> 
+    </div>
+      
+  </div>
+</template>
+<script>
+import XuDialog from './XuDialog.vue'
+import ajax from "@/utils/ajax.js";
+import eleCalendar from "@/assets/ele-calendar";
+import "@/assets/ele-calendar/dist/vue-calendar-show.css";
+import { parseTime } from "@/utils";
+export default {
+  
+  props:['dialogShow','courseId'],
+  data() {
+    return {
+      courseDateDayOptions: {
+        disabledDate: this.calendarDisabledDate
+      },
+      weekData: ["一", "二", "三", "四", "五", "六", "日"],
+      dataList:[],
+
+      dialogDisplay:false,
+
+      // selectDate:[]
+      date:''
+    };
+  },
+  methods: {
+    selectDate(val){
+      this.date = parseTime(val, "{y}-{m}-{d}")
+    },
+    selectBtn(){
+      if(!this.date) {
+        this.$message.error('请先选择日期再预约')
+      } else {
+        this.$emit('sendDate',this.date)
+      }
+    },
+    renderContent(h,parmas) { //设置lunarcalendar=true,parmas返回值包含农历
+      const loop = data =>{
+        return (<div>{data.defvalue.text}</div>
+        )
+      }
+      
+      // if(!parmas.defvalue.disabled){
+      //   console.log(parmas)
+      // }
+
+      for (let i in this.dataList) {
+        if (this.dataList[i].courseDateType == -1) {
+          //日判断
+          if (
+            parseTime(parmas.defdate, "{y}-{m}-{d}") == this.dataList[i].courseDateDay
+          ) {
+            return (
+                  <div style="min-height:40px;background-color: #fff;color: #606266;">
+                    {loop(parmas)} 
+                    <div style="display: inline-block;
+                      border-radius: 50%;
+                      height: 10px;
+                      width: 10px;
+                      background-color: #E6A23C"></div>
+                  </div>
+              );
+          }
+        } 
+      }
+
+      if(parmas.defvalue.disabled){
+        return (
+                  <div style="min-height:40px;background-color: #fff;color: #606266;">
+                    {loop(parmas)} 
+                    <div style="display: inline-block;
+                      border-radius: 50%;
+                      height: 10px;
+                      width: 10px;
+                      background-color: #bbb"></div>
+                  </div>
+              );
+      } else {
+        return (
+                  <div style="min-height:40px;">
+                    <div style="width:40px;height:40px;margin:0 auto;">
+                      {loop(parmas)} 
+                      <div style="display: inline-block;
+                        border-radius: 50%;
+                        height: 10px;
+                        width: 10px;
+                        background-color: #42b983"></div>
+                    </div>
+                    
+                  </div>
+              );
+      }
+
+      // return (
+      //   <div  style="min-height:40px;">
+      //     {loop(parmas)}
+      //   </div>
+      // );
+    },
+    calendarDisabledDate(value) {
+      //只可选两周内
+      if (Date.now() - value > 86400000) {
+        return true;
+      }
+      for (let i in this.dataList) {
+        if (this.dataList[i].courseDateType <= 0) {
+          //日判断
+          if (
+            parseTime(value, "{y}-{m}-{d}") == this.dataList[i].courseDateDay
+          ) {
+            return true;
+          }
+        } else if (this.dataList[i].courseDateType == 1) {
+          //周判断
+          if (value.getDay() == 0) {
+            if (this.dataList[i].courseDateWeek == 7) {
+              return true;
+            }
+          } else {
+            if (value.getDay() == this.dataList[i].courseDateWeek) {
+              return true;
+            }
+          }
+        } else if (this.dataList[i].courseDateType == 2) {
+          //月判断
+          if (value.getMonth() + 1 == this.dataList[i].courseDateMonth) {
+            return true;
+          }
+        }
+      }
+      //周判断
+
+      //日判断
+      return false;
+    },
+    refresh() {
+      ajax('/portal/reserve/getCourseDate.do', { courseId: this.courseId }).then(res => {
+        let vm = this
+        if (res.code == 0) {
+          vm.dataList = res.data;
+          vm.dataList.forEach(item => {
+            Object.assign(item, item.baseModel);
+          });
+        } else {
+          this.$message.error({ message: res.message, duration: 1500 });
+          return;
+        }
+      });
+    },
+
+    closeDetail() {
+      this.dialogDisplay = false
+      this.$emit('close')
+    }
+  },
+  components: {  eleCalendar , XuDialog},
+  watch:{
+    courseId(val, oldVal) {
+      this.refresh();
+    },
+    dialogShow(val) {
+      this.date = ''
+      this.dialogDisplay = val
+    },
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+  $bannerColor:#c01a0c;
+  .dialogDateDetail {
+    padding: 20px;
+    .dialog_header {
+      background-color: $bannerColor;
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
+      padding: 20px 50px;
+      color: #fff;
+      line-height: 50px;
+      text-align: center;
+      font-size: 18px;
+    }
+    .dialog_footer {
+      border-top: 1px solid #f1f1f1;
+      padding:20px 200px;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .select_date {
+      text-align: center;
+      padding-bottom: 50px;
+      .el-button {
+        height: 40px;
+        width: 300px;
+        background-color: $bannerColor;
+        border: none;
+      }
+    }
+
+    // .dialog_body {
+    //   padding: 20px;
+    // }
+  }
+  
+</style>

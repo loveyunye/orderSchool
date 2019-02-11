@@ -1,0 +1,157 @@
+<template>
+  <div>
+    <xu-dialog :showDialog='dialogDisplay'  @close="closeDetail" class="dialogTeach">
+			<div class="dialog_header">
+        <el-row :gutter="20">
+          <el-col :span="5">
+            <img :src="teachDetail.photos[0]" alt=""   width="100%"/>
+          </el-col>
+          <el-col :span="8">
+            <ul>
+              <li>宣教员编号：{{teachDetail.employeeSerialNumber}}</li>
+              <li>工号/学号：{{teachDetail.employeeCode}}</li>
+              <li>联系方式：{{teachDetail.employeeCellPhone}}</li>
+            </ul>
+          </el-col >
+          <el-col :span="9">
+            <ul>
+              <li>姓名：{{teachDetail.employeeName}}</li>
+              <li>所在学院与党支部：{{teachDetail.workGroup}}</li>
+              <li>邮箱：{{teachDetail.email}}</li>
+            </ul>
+          </el-col>
+        </el-row>
+      </div>
+      <div class="dialog_content">
+        <div class="block">
+          <div class="title">个人简介</div>
+          <div class="word">
+            {{teachDetail.description?teachDetail.description:'暂无简介'}}
+          </div>
+
+          <div class="title">现有课程</div>
+          <div class="word">
+            <el-row>
+              <el-col :span="24" v-for="(item,index) in teachDetail.courses" :key="index">
+                <span>编号：{{item.courseSerialNumber}} &nbsp;&nbsp;&nbsp; 课名：{{item.courseName}}</span>
+              </el-col>
+              <el-col :span="24" v-if="teachDetail.courses.lenght == 0">
+                暂无课程
+              </el-col>
+            </el-row>
+          </div>
+
+          <div class="title">可服务基地</div>
+          <div class="word">
+            <el-row>
+              <el-col :span="8" v-for="(item,index) in teachDetail.bases" :key="index">
+                <span>{{item.organizationStructureName}}</span>
+              </el-col>
+              <el-col :span="24" v-if="teachDetail.bases.lenght == 0">
+                暂无服务基地
+              </el-col>
+            </el-row>
+          </div>
+
+          <div class="title">累计上课次数：{{teachDetail.lectureCount}} </div>
+          <div class="title">累计评分：{{teachDetail.evaluation==0?'暂无评分':teachDetail.evaluation}}</div>
+        </div>
+
+      </div>
+
+      <!-- <div class="btn">
+        <el-button type="primary" @click="closeDetail">我已阅读，继续预约</el-button>
+      </div> -->
+		</xu-dialog>
+  </div>
+</template>
+<script>
+  import XuDialog from './XuDialog.vue'
+  import ajax from '@/utils/ajax'
+  
+  export default {
+    props:['dialogShow','teachId'],
+    data() {
+      return {
+        dialogDisplay:true,
+        teachDetail: {photos:[],courses:[],bases:[]}
+      }
+    },
+    methods: {
+      closeDetail() {
+        this.$emit('close')
+      }
+    },
+    watch: {
+      dialogShow(val) {
+        this.dialogDisplay = val
+      },
+      teachId(val) {
+        if(val) {
+          ajax('/portal/common/getTeacherDetailedById.do',{
+            id: val
+          },'.xu_content').then(res => {
+            if(res.code!==0) {
+              this.$message.error(res.message)
+              this.$emit('close')
+              return
+            } else {
+              this.teachDetail = res.data
+            }
+          })
+        }
+      }
+
+    },
+    mounted() {
+      this.dialogDisplay = this.dialogShow?true:false
+    },
+    components:{
+      XuDialog
+    }
+  }
+</script>
+
+<style lang="scss">
+  .dialogTeach {
+	  $bannerColor: #c01a0c;
+
+    .dialog_header {
+      background-color: $bannerColor;
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
+      padding: 40px 50px 20px;
+      color: #fff;
+      ul {
+        padding-top: 15px;
+        line-height: 30px;
+      }
+
+    }
+    .dialog_content {
+      padding: 0px 50px 30px;
+      div.block {
+        padding: 10px 0 10px;
+        .title {
+          color: #333;
+          font-size: 16px;
+          padding-top: 20px;
+          padding-bottom: 10px;
+        }
+        .word {
+          color: #555;
+        }
+      }
+    }
+    .btn {
+      text-align: center;
+      padding-bottom: 50px;
+      .el-button {
+        height: 40px;
+        width: 300px;
+      }
+    }
+  }
+    
+</style>
+

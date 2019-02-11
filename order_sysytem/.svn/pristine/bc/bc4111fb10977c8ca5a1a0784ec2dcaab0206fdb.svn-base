@@ -1,0 +1,370 @@
+<template>
+	<div class="routePage">
+		<el-row class="searchBtn">
+			<!-- <el-col :span="6">
+				<el-date-picker
+					style="width:320px;"
+					v-model="launchedTime"
+					type="date"
+					placeholder="选择时间"
+					value-format="yyyy-MM-dd"
+					@change="dateChange"
+				></el-date-picker>
+			</el-col> -->
+			<el-col :span="18" >
+				<el-input v-model="searchParams.keys.courseName">
+					<el-button slot="append" plain icon="el-icon-search" @click="getRoutesList" style="background-color:#c01a0c;color:#fff;">输入线路名称</el-button>
+				</el-input>
+			</el-col>
+			<el-col :span="3" :offset="1">
+				<el-button  plain  @click="heightSearch=!heightSearch" style="background-color:#c01a0c;color:#fff;">高级搜索 <i :class="heightSearch?'el-icon-arrow-up':'el-icon-arrow-down'"></i></el-button>
+			</el-col>
+		</el-row>
+    <el-collapse-transition>
+			<el-row class="searchOption" v-if="heightSearch">
+				<el-col :span="24" class="optionsValue">
+					<table cellpadding="0" cellspacing="0">
+						<!-- <tr>
+							<td valign="top">时长</td>
+							<td>
+								<el-checkbox-group v-model="druationsValue">
+									<el-checkbox v-for="(item,index) in durationsOptions" :key="index" :label="item.name">{{item.name}}</el-checkbox>
+								</el-checkbox-group>
+							</td>
+						</tr> -->
+						<tr>
+							<td valign="top">关键字</td>
+							<td>
+								<el-checkbox-group v-model="themeValue">
+									<el-checkbox v-for="(item,index) in themeOptions" :key="index" :label="item.id">{{item.name}}</el-checkbox>
+								</el-checkbox-group>
+							</td>
+						</tr>
+						<tr>
+							<td valign="top">所属区域</td>
+							<td>
+								<el-checkbox-group v-model="placesValue">
+									<el-checkbox v-for="(item,index) in placesOptions" :key="index" :label="item.name">{{item.name}}</el-checkbox>
+								</el-checkbox-group>
+							</td>
+						</tr>
+						
+						<tr>
+							<td valign="top">基地</td>
+							<td>
+								<el-checkbox-group v-model="baseValue">
+									<el-checkbox v-for="(item,index) in baseOptions" :key="index" :label="item.organizationStructureId">{{item.organizationStructureName}}</el-checkbox>
+								</el-checkbox-group>
+							</td>
+						</tr>
+					</table>
+				</el-col>
+			</el-row>
+    </el-collapse-transition>
+
+		<el-row style="margin-top:20px;">
+			<el-table :data="routeList" style="width:100%" border class="routePage_table">
+				<el-table-column v-for="(item,index) in itemArr" :key="index" :width="itemWidth[index]" :label="cnameArr[index]" align="center" :prop="itemArr[index]">
+						<template slot-scope="scope">
+							<span v-html="scope.row[item]" :class="index===1||index===3?'linkItem':'' " v-on:click="detailItem(scope.$index,scope.row,item)"></span>
+						</template>
+					</el-table-column>
+					<el-table-column   align="center" label="课程评分">
+						<template slot-scope="scope">
+							{{scope.row.evaluation?scope.row.evaluation:'暂无'}}
+						</template>
+					</el-table-column>
+
+					<el-table-column   align="center" label="操作">
+						<template slot-scope="scope">
+							<el-button size="mini" v-on:click="premission(scope.row)">预约</el-button>
+						</template>
+					</el-table-column>
+			</el-table>
+		</el-row>
+		<div>
+			
+		</div>
+		
+
+
+
+		<el-pagination
+			class="pageChange"
+			@current-change="changeCurrent"
+			background
+			layout="prev,pager,next"
+			:pager-count="5"
+			:page-size="15"
+			:total="totalRoute"
+		>
+		</el-pagination>
+
+		<RouteDetail :routeDetail='routeDetail' :showDetail="dialogDetail" @close="dialogDetail=false"></RouteDetail>
+		<RouteInstructions :showInstructions="dialogInstruction" @agree="dialogInstruction=false;dialogOrderShow=true" @close="dialogInstruction=false;"></RouteInstructions>
+
+		<RouteOrder :dialogShow="dialogOrderShow" :orderObject="dialogOrder" @close="dialogOrderShow=false"></RouteOrder>
+		<BaseDialog :dialogShow="baseDialogShow"  @close="baseDialogShow=false" :baseId="baseId"></BaseDialog>
+		
+	</div>
+</template>
+
+<script type="text/javascript">
+	import RouteDetail from '@/components/RouteDetail'
+	import RouteInstructions from '@/components/RouteInstructions'
+	import ajax from '@/utils/ajax'
+	import { distinct } from '@/utils'
+	import RouteOrder from '@/components/RouteOrder'
+  import BaseDialog from '@/components/BaseDialog'
+
+
+	export default {
+		data() {
+			return {
+				searchParams: {
+					keys: {
+
+						baseIds:'',
+						courseThemeId: '',
+						coursePlaces:'',
+						courseName: ''
+
+					},
+					length: 15,
+					start: 0,
+				},
+				routeList: [],
+				totalRoute:0,
+				cnameArr: ['课程编号','课程名称','关键词','包含基地','所属区域'],
+				itemArr: ['courseSerialNumber','courseName','courseThemeName','baseName','coursePlace'],
+				itemWidth: ['145','300','200','300','110','110'],
+
+				// dialog_route_detail
+				routeDetail: {teachArr:[]},
+				dialogDetail: false,
+
+				// dialog_route_instructions
+				dialogInstruction: false,
+
+				dialogOrder: {},
+				dialogOrderShow:false,
+				
+
+
+				durationsOptions: [],
+				druationsValue: [],
+
+				placesOptions: [],
+				placesValue: [],
+
+				themeOptions: [],
+				themeValue: [],
+
+				baseOptions: [],
+				baseValue: [],
+
+				heightSearch:true,
+				launchedTime:'',
+
+				// 增加基地
+				baseDialogShow: false,
+        baseId:0,
+			}
+		},
+		methods: {
+			premission(row) {
+				this.$store.dispatch('GetUserInfo').then(res => {
+					if(res) {
+						this.dialogInstruction = true
+						this.dialogOrder = row
+					} else {
+						this.$confirm('您还未登录，是否前往登录?','提示',{
+							confirmButtonText: '确定',
+							cancelButtonText: '取消',
+							type: 'warning'
+						}).then(()=>{
+							this.$store.dispatch('LogOut').then(()=>{
+								this.$router.push({ path: '/login'})
+							})
+						}).catch(() => {})
+					}
+				})
+			},
+			detailItem(index,row, value){
+				console.log(index,row,value)
+				if(value==='courseName'){
+					this.routeDetail = row
+					this.dialogDetail = true
+				} else {
+					this.baseId = row.baseId
+        	this.baseDialogShow = true
+				}
+				
+			},
+			changeCurrent(value){
+				this.searchParams.start = 15 * (value-1)
+				this.getRoutesList()
+			},
+			getRoutesList() {
+				ajax('/portal/reserve/searchRoute.do',this.searchParams,'.routePage_table').then(res => {
+					this.routeList = res.aaData
+					this.totalRoute = res.recordsTotal
+					this.routeList.forEach(itemList => {
+						let teachIds = itemList.teacherIds.split(',')
+						let teachNames = itemList.teacherNames.split('/')
+						itemList.teachArr = teachIds.map((item,index) => teachNames[index]+'&'+item)
+					})
+					
+					// this.routeDetail = this.routeList[0]
+				})
+			},
+			dateChange(value) {
+				// console.log(value)
+				this.searchParams.keys.launchedTime = value === null?'':value
+			}
+		},
+		mounted() {
+			this.getRoutesList()
+			ajax('/portal/common/getBasicData.do?parentId=1',false,false).then(res=>{
+				this.durationsOptions = res
+			})
+			ajax('/portal/common/getBasicData.do?parentId=6',false,false).then(res=>{
+				this.placesOptions = res
+			})
+			// 关键字
+			ajax('/portal/common/getBasicData.do?parentId=31',false,false).then(res=>{
+				this.themeOptions = res
+			})
+			ajax('/portal/common/getBases.do',false,false).then(res=>{
+				this.baseOptions = res
+			})
+		},
+		watch:{
+			// 基地
+			baseValue(value){
+				this.searchParams.keys.baseIds = value.join()
+				this.getRoutesList()
+			},
+			druationsValue(value){
+				this.searchParams.keys.routeDurations = value.join()
+				this.getRoutesList()
+			},
+			// 关键字
+			themeValue(value){
+				this.searchParams.keys.courseThemeId = value.join()
+				this.getRoutesList()
+			},
+			// 区域
+			placesValue(value){
+				this.searchParams.keys.coursePlaces = value.join()
+				this.getRoutesList()
+			},
+		},
+		components:{
+			RouteDetail,RouteInstructions,RouteOrder,BaseDialog
+		}
+	}
+	
+</script>
+
+<style type="text/scss" lang="scss" >
+	$bannerColor: #c01a0c;
+
+
+	.routePage {
+		
+		.searchBtn {
+			margin-top: 10px;
+			height: 40px;
+		}
+
+		.el-button {
+			border: none;
+		}
+	
+		.searchOption {
+			padding-top: 20px;
+
+			.optionsValue {
+				tr td:nth-child(1) {
+					background-color: #d7d7d7;
+					width: 14%;
+					padding-left: 28px;
+					border-bottom: solid 1px #bbb;
+					line-height: 40px;
+
+
+				}
+				tr td:nth-child(2) {
+					border-bottom: dotted 0.5px #ccc;
+					background-color: #fff;
+					padding-right: 10px;
+					min-width: 1020px;
+				}
+				td {
+					// line-height: 30px;
+				}
+				tr:nth-child(1) td {
+					padding-top: 10px;
+				}
+				tr:nth-child(4) td {
+					padding-bottom: 5px;
+					border: none;
+				}
+
+				.el-checkbox__input .el-checkbox__inner{
+					display: none;
+				}
+				.el-checkbox__input.is-checked .el-checkbox__inner {
+					display: block;
+					color: #fff;
+					background-color: $bannerColor;
+					border: none;
+				}
+				.el-checkbox__input.is-checked+.el-checkbox__label {
+					color: #fff;
+				}
+				.el-checkbox {
+					min-width: 110px;
+					padding: 0 5px;
+					text-align: center;
+					line-height: 30px;
+					font-weight: 400;
+				}
+				.el-checkbox+.el-checkbox {
+					margin-left: 5px;
+				}
+				.el-checkbox {
+					margin: 5px;
+				}
+				.el-checkbox.is-checked {
+					background-color: $bannerColor;
+					border-radius: 2px;
+				}
+			}
+		}
+
+		.pageChange {
+			text-align: center;
+			margin: 50px 0;
+		}
+
+		.el-pagination.is-background .el-pager li:not(.disabled).active {
+			background-color: $bannerColor;
+			color: #fff;
+		}
+		.el-table thead {
+				background-color: $bannerColor;
+				color: #fff;
+				font-weight: normal;
+			}
+			.el-table th {
+				background-color: $bannerColor;
+				// padding: 6px 0;
+				font-weight: normal;
+			}
+			.el-table td { padding: 11px 0;.linkItem{text-decoration: underline;cursor: pointer;}}
+
+
+	}
+</style>

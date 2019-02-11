@@ -1,0 +1,73 @@
+/**
+ * 公用 ajax 方法 by xuin 2018/07/23
+ * param @url  地址
+ * param @objectFrom 对象
+ * param @loding  异步加载提示
+ */
+
+import axios from 'axios'
+import store from '@/store'
+// import { setToken } from '@/utils/auth'
+
+import { Loading } from 'element-ui'
+
+import { Message } from 'element-ui'
+// 开启全局加载
+
+global.sessionStatus = true;
+
+
+
+export default (url, objectForm={}, loading=true) => {
+  if (url.search('/sys') < 0) {
+    url = '/sys' + url
+  }
+  // let strParam = ''
+
+  // // const fd = new FormData()
+  // if(objectForm) {
+
+  //   for (const key in objectForm) {
+  //     if (typeof objectForm[key] !== 'string') {
+  //       fd.append(key, JSON.stringify(objectForm[key]))
+  //     } else {
+  //       fd.append(key, objectForm[key])
+  //     }
+  //   }
+  // }
+  let ajaxLoading
+  if(loading === true ) {
+    ajaxLoading = Loading.service({fullscreen:true,target:'.app-main'})
+  }else  if(loading){
+    ajaxLoading = Loading.service({fullscreen:true,target:loading})
+  }
+  
+
+  return new Promise((resolve, reject) => {
+    axios.get(url, {params:objectForm}).then(res => {
+      if (res.headers['session-status'] == "OVERDUE"){
+        if (sessionStatus) 
+          // alert(res.data.message)
+          Message({
+            message: res.data.message,
+            type: 'warning'
+          })
+          sessionStatus = false
+
+          setTimeout(function(){
+            store.dispatch('LogOut').then(() => { 
+              location.reload()
+              sessionStatus = true
+            })
+          },2000)
+        
+      }
+      // setToken('admin')
+      resolve(res.data)
+      loading?ajaxLoading.close():null
+    }).catch(res => {
+      ajaxLoading.close()
+      loading?ajaxLoading.close():null
+    })
+  })
+}

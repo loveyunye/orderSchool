@@ -1,0 +1,109 @@
+<template>
+  <div>
+    <xu-dialog :showDialog='dialogInstructions'  @close="closeDetail" class="dialogInstructions">
+			<div class="dialog_header">
+        浙江大学学生党建与思政现场教学基地<br/>
+        预约协议
+      </div>
+      <div class="dialog_content">
+        
+        <p style="margin-top:auto;margin-bottom: auto;text-align:left;background:white;text-indent:25px">
+            <span style=";font-family:&#39;微软雅黑&#39;,sans-serif;color:#555555"></span><span style=";font-family:&#39;微软雅黑&#39;,sans-serif;color:#555555">浙江大学学生党建与思政现场教学基地面向全校师生党支部、组织（社团）开放现场教学预约，为保证现场教学的顺利进行，特制定《浙江大学学生党建与思政现场教学基地预约协议》，请各预约者仔细阅读并遵守。</span>
+        </p>
+        <p style="margin-top:auto;margin-bottom: auto;text-align:left;background:white;text-indent:25px">
+            <span style=";font-family:&#39;微软雅黑&#39;,sans-serif;color:#555555">1.</span><span style=";font-family:&#39;微软雅黑&#39;,sans-serif;color:#555555">预约者请至少提前一周通过本系统进行预约；</span>
+        </p>
+        <p style="margin-top:auto;margin-bottom: auto;text-align:left;background:white;text-indent:25px">
+            <span style=";font-family:&#39;微软雅黑&#39;,sans-serif;color:#555555">2.</span><span style=";font-family:&#39;微软雅黑&#39;,sans-serif;color:#555555">预约后请及时在“我的—预约情况”中关注预约状态：若预约申请通过，请及时与宣教员取得联系；若未通过，请及时调整预约；</span>
+        </p>
+        <p style="margin-top:auto;margin-bottom: auto;text-align:left;background:white;text-indent:25px">
+            <span style=";font-family:&#39;微软雅黑&#39;,sans-serif;color:#555555">3.</span><span style=";font-family:&#39;微软雅黑&#39;,sans-serif;color:#555555">若预约申请通过后需取消原预约单，则请联系课程管理员进行处理；</span>
+        </p>
+        <p style="margin-top:auto;margin-bottom: auto;text-align:left;background:white;text-indent:25px">
+            <span style=";font-family:&#39;微软雅黑&#39;,sans-serif;color:#555555">4.</span><span style=";font-family:&#39;微软雅黑&#39;,sans-serif;color:#555555">现场教学过程中请遵守各教学基地相关管理规定；</span>
+        </p>
+        <p style="margin-top:auto;margin-bottom: auto;text-align:left;background:white;text-indent:25px">
+            <span style=";font-family:&#39;微软雅黑&#39;,sans-serif;color:#555555">5.</span><span style=";font-family:&#39;微软雅黑&#39;,sans-serif;color:#555555">现场教学过程中请遵守各教学基地相关管理规定；</span>
+        </p>
+        <p style="margin-top:auto;margin-bottom: auto;text-align:left;background:white;text-indent:25px">
+            <span style=";font-family:&#39;微软雅黑&#39;,sans-serif;color:#555555">如遇任何问题，请及时与我们联系，邮箱：zjuxcjxjd@163.com。</span>
+        </p>
+        <p style="margin-top:auto;margin-bottom: auto;text-align:left;background:white;text-indent:25px">
+            <span style=";font-family:&#39;微软雅黑&#39;,sans-serif;color:#555555">感谢您的支持</span>
+        </p>
+      </div>
+      <div class="btn">
+        <input name="Fruit" type="checkbox" v-model="agreeStatus" />&nbsp;&nbsp;我已阅读并同意《浙江大学学生党建与思政现场教学基地预约协议》
+        <br/><br/>
+        <el-button type="primary" @click="agree" :disabled="!agreeStatus" :style="{'backgroundColor':agreeStatus?'#c01a0c':'#999'}">下一步</el-button>
+      </div>
+	</xu-dialog>
+  </div>
+</template>
+<script>
+    import XuDialog from './XuDialog.vue'
+    export default {
+        props:['showInstructions'],
+        data() {
+        return {
+            dialogInstructions:true,
+            agreeStatus:false
+        }
+        },
+        methods: {
+        closeDetail() {
+            this.$emit('close')
+        },
+        agree() {
+            this.$emit('agree')
+        }
+        },
+        watch: {
+        showInstructions(val) {
+            this.dialogInstructions = val
+        },
+        },
+        mounted() {
+        this.dialogInstructions = this.showInstructions?true:false
+        },
+        components:{
+        XuDialog
+        }
+    }
+</script>
+
+<style lang="scss">
+	$bannerColor: #c01a0c;
+
+  .dialogInstructions {
+    .dialog_header {
+      background-color: $bannerColor;
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
+      padding: 10px 50px;
+      color: #fff;
+      line-height: 40px;
+      text-align: center;
+      font-size: 22px;
+    }
+    .dialog_content {
+      padding: 20px 50px;
+      max-height: 300px;
+      overflow:scroll;
+      line-height: 25px;
+    }
+    .btn {
+      text-align: center;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      .el-button {
+        height: 40px;
+        width: 300px;
+        background-color: $bannerColor;
+        border: none;
+      }
+    }
+  }
+    
+</style>
+

@@ -1,0 +1,338 @@
+<template>
+  <div>
+    <xu-dialog :showDialog='dialogOrder'  @close="closeDetail" class="route_order">
+			<div class="dialog_header">
+        预约申请单
+      </div>
+      <div class="dialog_content">
+        <form>
+          <table style="width:100%"   cellpadding="0" cellspacing="0">
+            <tr><td colspan="2"><span>课程信息</span></td></tr>
+            <tr>
+              <!-- <td style="width:50%">* 预约课程编号:  <input readonly type="text" v-model="orderForm.courseSerialNumber"></td> -->
+              <td style="width:50%">预约课程名称: <input type="text" readonly v-model="orderForm.courseName"></td>
+              <td>包含基地: <input type="text" readonly v-model="baseName"></td>
+            </tr>
+            <tr><td colspan="2"><span>预约者信息</span></td></tr>
+            
+            <tr>
+              <td>预约人: <input type="text"  readonly v-model="orderForm.reservaRouteNameBak"></td>
+              <td>预约人工号/学号: <input type="text"  v-model="orderForm.reservaRouteCodeBak"></td>
+              
+            </tr>
+            <tr>
+              <td>所在单位: 
+                <input type="text" readonly  v-model="reservaRouteCollege">
+              </td>
+              <td>所在党支部: 
+                <input type="text" readonly v-model="reservaRouteCommunity">
+              </td>
+            </tr>
+            <tr>
+              <td>联系电话: 
+                <input type="text" readonly  v-model="reservaRoutePhone">
+              </td>
+              <td>电子邮箱: <input type="text" readonly v-model="reservaRouteMail"></td>
+            </tr>
+
+
+
+            <tr><td colspan="2"><span>预约信息</span></td></tr>
+
+            <tr>
+              <td>* 预约时间: 
+                {{orderForm.reservaRouteDate}} / &nbsp;
+                <select v-model="orderForm.reservaRouteTimeSlot" style="width:100px;">
+                  <option :value="item.name" v-for="(item,index) in reservaRouteTimeSlotArr" :key="index">{{item.name}}</option>
+                </select>
+              </td>
+              <td>* 预约单位: 
+                <select v-model="orderForm.reservaRouteCollege">
+                  <option :value="item.organizationStructureName" v-for="(item,index) in collegesOptions" :key="index">{{item.organizationStructureName}}</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>* 出发校区/单位:
+                <select v-model="orderForm.reservaRoutePlace">
+                  <option :value="item.name" v-for="(item,index) in placesOptions" :key="index">{{item.name}}</option>
+                </select>
+              </td>
+              <td >出发地址：<input type="text" class="write" v-model="orderForm.reservaRouteAddress"></td>
+            </tr>
+            <tr>
+              <td>* 预约党支部: 
+                <input type="text" class="write" v-model="orderForm.reservaRouteCommunity">
+              </td>
+              <td>* 参加人数: <input type="text" class="write" v-model="orderForm.reservaRouteScale"></td>
+            </tr>
+            <tr>
+              <td>* 联系人: <input type="text" class="write"  v-model="orderForm.reservaRouteName"></td>
+              <td>* 联系人工号/学号: <input type="text" class="write" v-model="orderForm.reservaRouteCode"></td>
+            </tr>
+            <tr>
+              <td>* 联系人电话: <input type="text" class="write" v-model="orderForm.reservaRoutePhone"></td>
+              <td>* 电子邮箱: <input type="text" class="write" v-model="orderForm.reservaRouteMail"></td>
+            </tr>
+
+            <tr>
+              <td colspan="2">
+                
+                <div>备注: </div>
+                <!-- <input type="text" class="write" v-model="orderForm.reservaComments"> -->
+                <textarea v-model="orderForm.reservaComments" cols="30" rows="3" ></textarea>
+              </td>
+            </tr>
+          </table>
+        </form>
+      </div>
+
+      <div class="btn">
+        <el-button type="primary" @click="submitRoute">提交预约申请单</el-button>
+      </div>
+		</xu-dialog>
+  </div>
+</template>
+<script>
+  import XuDialog from './XuDialog.vue'
+  import ajax from '@/utils/ajax'
+  import { getNowFormatDate } from  '@/utils'
+
+  /**
+   * 这段代码已经改的不认识了，这种甲方真的 0.0
+   * 需求大改了三次，每次改成都确定好了，但是过三四周又要卷土重来
+   * 真的是 接项目要有一个清楚自身需求的甲方，心态都要崩掉
+   * 这种刚开始去问他们全部肯定，到最后做好，要全部休整，而且这都整了第三遍了，能不能上点心呀
+   */
+
+  export default {
+    props:['dialogShow','orderObject'],
+    data() {
+      return {
+        dialogOrder:true,
+        orderDetail: {},
+        placesOptions:[],
+        collegesOptions:[],
+        reservaRouteTimeSlotArr:[],
+
+        reservaRouteMail:'',
+        reservaRoutePhone:'',
+        reservaRouteCommunity:'',
+        reservaRouteCollege:'',
+        baseName:'',
+
+        orderForm:{
+          "courseId":0,
+          "reservaRouteName":"",
+          "reservaRouteCode":"",
+          "reservaRouteCollege":"",
+          "reservaRouteMail":"",
+          "reservaRouteCommunity":"",
+          "reservaRoutePhone":"",
+          //  日期
+          "reservaRouteDate":"",
+          "reservaRouteTimeSlot":"",
+          "courseSerialNumber":'',
+          "courseName":'',
+          "reservaRoutePlace":"",
+          "reservaRouteScale":"",
+
+          "reservaRouteAddress":"",
+          "reservaComments":"",
+        }
+      }
+    },
+    methods: {
+      closeDetail() {
+        this.$emit('close')
+      },
+      submitRoute() {
+        const valiteArr = ["courseId","reservaRouteName","reservaRouteCode","reservaRouteCollege","reservaRouteMail",
+          "reservaRouteCommunity","reservaRoutePhone","reservaRouteDate","courseSerialNumber","courseName",
+          "reservaRoutePlace","reservaRouteScale","reservaRoutePhone","reservaRouteTimeSlot"]
+
+        for(let i=0;i<valiteArr.length;i++){
+          if(!this.orderForm[valiteArr[i]]){
+            this.$message.error('带 * 必输项未填满。')
+            return false
+          }
+        }
+        const reg = /^[1-9]*[1-9][0-9]*$/
+        if(!reg.test(this.orderForm['reservaRouteScale'])){
+          this.$message.error('参与人数只是为整数而且不为0')
+          return false
+        }
+        ajax('/portal/reserve/reserve.do',{
+          classReservaRoute: this.orderForm
+        },false).then(res => {
+          if(res.code === 0) {
+            // this.$message.success('预约成功')
+            this.$alert('预约单已提交，请至“我的—预约情况”中查看预约情况。', '提示', {
+              confirmButtonText: '确定',
+            });
+
+          } else {
+            this.$message.error(res.message)
+          }
+          this.$emit('close')
+
+        })
+      }
+    },
+    watch: {
+      dialogShow(val) {
+        this.dialogOrder = val
+      },
+      orderObject(val) {
+        this.orderDetail = val
+        for(let key in this.orderForm) {
+          if(this.orderDetail[key]) {
+            this.orderForm[key] = this.orderDetail[key]
+          }
+        }
+        this.baseName = this.orderDetail.baseName
+        // this.classReservaRoute['courseId'] = this.orderDetail['courseId']
+        // this.classReservaRoute['reservaRouteDate'] = this.orderDetail['reservaRouteDate']
+        
+        if(localStorage.getItem('userInfo')) {
+          let userInfo = JSON.parse(localStorage.getItem('userInfo')).data
+          // this.orderForm['reservaRouteMail'] = userInfo['reserveEmail']
+          // this.orderForm['reservaRoutePhone'] = userInfo['reservePhone']
+          // this.orderForm['reservaRouteCommunity'] = userInfo['reserveCommunity']
+          // this.orderForm['reservaRouteName'] = userInfo['reserveName']
+          this.orderForm['reservaRouteNameBak'] = userInfo['reserveName']
+          // this.orderForm['reservaRouteCode'] = userInfo['reserveCode']
+          this.orderForm['reservaRouteCodeBak'] = userInfo['reserveCode']
+          this.orderForm['reservaRouteCollege'] = userInfo['reserveOrganizationStructureName']
+
+          this.reservaRouteMail = userInfo['reserveEmail']
+          this.reservaRoutePhone = userInfo['reservePhone']
+          this.reservaRouteCommunity = userInfo['reserveCommunity']
+          this.reservaRouteCollege = userInfo['reserveOrganizationStructureName']
+
+          // this.orderForm['reservaRouteMail'] = userInfo['reserveEmail']
+          // this.orderForm['reservaRoutePhone'] = userInfo['reservePhone']
+          // this.orderForm['reservaRouteCommunity'] = userInfo['reserveCommunity']
+          // this.orderForm['reserveName'] = userInfo['reserveName']
+        }
+        this.orderForm['reservaComments'] = ''
+        this.orderForm['reservaRouteAddress'] = ''
+        this.orderForm['reservaRouteScale'] = ''
+        this.orderForm['reservaRouteTimeSlot'] = ''
+
+      }
+    },
+    mounted() {
+      this.dialogOrder = this.dialogShow?true:false
+      this.orderDetail = JSON.parse(JSON.stringify(this.orderObject))
+
+      for(let key in this.orderForm) {
+        if(this.orderDetail[key]) {
+          this.orderForm[key] = this.orderDetail[key]
+        }
+      }
+
+      // if(localStorage.getItem('userInfo')) {
+      //   let userInfo = JSON.parse(localStorage.getItem('userInfo')).data
+      //   this.orderForm['reservaRouteMail'] = userInfo['reserveEmail']
+      //   this.orderForm['reservaRoutePhone'] = userInfo['reservePhone']
+      //   this.orderForm['reservaRouteCommunity'] = userInfo['reserveCommunity']
+      //   this.orderForm['reservaRouteName'] = userInfo['reserveName']
+      //   this.orderForm['reservaRouteCode'] = userInfo['reserveCode']
+      //   this.orderForm['reservaRouteCollege'] = userInfo['reserveOrganizationStructureName']
+
+        
+      // }
+
+      ajax('/portal/common/getBasicData.do?parentId=6',false,false).then(res=>{
+        this.placesOptions = res
+        // console.log(res)
+			})
+      ajax('/slianclass-pc-web/portal/common/getColleges.do',false,false).then(res=>{
+        this.collegesOptions = res
+      })
+      ajax('/portal/common/getBasicData.do',{parentId:110},false).then(res => {
+        this.reservaRouteTimeSlotArr = res
+      })
+
+    },
+    components:{
+      XuDialog
+    }
+  }
+</script>
+
+<style lang="scss">
+  .route_order {
+    $bannerColor:#c01a0c;
+    .dialog_header {
+      background-color: $bannerColor;
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
+      // padding: 20px 50px;
+      color: #fff;
+      line-height: 80px;
+      text-align: center;
+      font-size: 22px;
+
+    }
+    .dialog_content {
+      // padding: 20px 50px 50px;
+
+      table {
+
+        td {
+          span {
+            font-weight: bold;
+            color: $bannerColor;
+          }
+          width: 50%;
+          padding: 5px;
+          // border: 0.05px #ccc solid;
+          border-bottom: 0.05px #ccc solid;
+
+          input ,textarea ,select{
+            outline: none;
+            border: none;
+            width: 60%;
+          }
+          input.write {
+            border-bottom: 0.5px solid #555;
+          }
+          div {
+            float: left;
+          }
+          textarea {
+            display: inline-block;
+            float: left;
+            width: 70%;
+            resize:none;
+            border-bottom: 0.5px solid #555;
+            // border: 
+          }
+
+          
+        }
+        td + td {
+          border-left: 0.05px #ccc solid;
+        }
+
+      }
+    }
+    .btn {
+      text-align: center;
+      padding-top: 20px;
+      padding-bottom: 30px;
+      .el-button {
+        height: 40px;
+        width: 300px;
+        background-color: $bannerColor;
+        border: none;
+      }
+    }
+
+    
+  }
+    
+</style>
+

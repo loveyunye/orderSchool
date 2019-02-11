@@ -1,0 +1,331 @@
+<template>
+  <div>
+    <xu-dialog :showDialog='dialogOrder'  @close="closeDetail" class="route_comment" width="780px">
+			<div class="dialog_header">
+        反馈点评
+      </div>
+      <div class="dialog_content">
+        <form>
+          <table style="width:100%"   cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="width:50%">预约课程编号: <input readonly type="text" v-model="orderForm.reservaRouteCode"></td>
+              <td style="width:50%">预约课程名称: <input readonly type="text" v-model="orderForm.courseName"></td>
+            </tr>
+            <tr>
+              <td>预约校区: <input type="text" readonly v-model="orderForm.reservaRoutePlace"></td>
+              <td>预约时间: <input type="text" readonly v-model="orderForm.reservaRouteDate"></td>
+            </tr>
+            <tr>
+              <td>预约人数: <input type="text" readonly v-model="orderForm.reservaRouteScale"></td>
+              <td>预约人: <input type="text" readonly v-model="orderForm.reservaRouteName"></td>
+            </tr>
+            <tr>
+              <td>预约支部: <input type="text" readonly v-model="orderForm.reservaRouteCommunity"></td>
+              <td>联系人学号: <input type="text" readonly v-model="orderForm.reserveCode"></td>
+            </tr>
+            <tr>
+              <td>
+                <el-row>
+                  <el-col :span="6">
+                    课程评价:
+                  </el-col>
+                  <el-col :span="18">
+                    <ul>
+                      <li>整体评价:  <el-rate v-model="routeComment.commOverallEvaluation" class="rate"></el-rate></li>
+                      <li>授课内容评价: <el-rate v-model="routeComment.commContentEvaluation" class="rate"></el-rate></li>
+                      <li>日程安排评价: <el-rate v-model="routeComment.commScheduleEvaluation" class="rate"></el-rate></li>
+
+                      <li>其他意见: <input type="text" v-model="routeComment.commOtherOpinions" class="rate"></li>
+                    </ul>
+                  </el-col>
+                </el-row>
+              </td>
+              <td>
+                <el-row>
+                  <el-col :span="6">
+                    宣教员评价: <br>
+
+                    <div class="teachShow">
+                      <div v-for="(item,index) in teacherComment" :key="index" @click="showIndex = index">
+                         <i class="el-icon-arrow-right" v-if="showIndex==index"></i> {{item.teacherName}}
+                      </div>
+                    </div>
+
+                    
+                  </el-col>
+                  <el-col :span="18">
+
+                    <ul v-for="(item,index) in teacherComment" :key="index" v-if="index == showIndex">
+                      <li>风貌评价:  <el-rate v-model="item.commStyleEvaluation" class="rate"></el-rate></li>
+                      <li>内容评价: <el-rate v-model="item.commContentEvaluation" class="rate"></el-rate></li>
+                      <li>综合满意度: <el-rate v-model="item.commOverallEvaluation" class="rate"></el-rate></li>
+                      <li>其他意见: <input type="text" v-model="item.commOtherOpinions" class="rate"></li>
+                    </ul>
+                  </el-col>
+                </el-row>
+              </td>
+            </tr>
+          </table>
+        </form>
+      </div>
+
+      <div class="btn">
+        <el-button type="primary" @click="submitRoute">提交表单</el-button>
+      </div>
+		</xu-dialog>
+  </div>
+</template>
+<script>
+  import XuDialog from './XuDialog.vue'
+  import ajax from '@/utils/ajax'
+  import { getNowFormatDate } from  '@/utils'
+
+  export default {
+    props:['dialogShow','orderObject','routeId'],
+    data() {
+      return {
+        value1:5,
+        dialogOrder:true,
+        orderDetail: {},
+
+        // 显示哪一个宣教员评分
+        showIndex:0,
+
+        orderForm: {
+          date: getNowFormatDate(),
+          routeName: '',
+          routeSerialNumber: '',
+          routeDuration: '',
+          routePlace: '',
+          reserveName: '',
+          reserveCode: '',
+          // classReservaRouteId: '',
+          // customerId: 0,
+          routeLaunchedId: 0,
+          reservaRouteAddress: '',
+          reservaRoutePhone: '',
+          reservaRouteMail: '',
+          reservaRouteCommunity: '',
+          reservaRouteScale: '',
+        },
+        // 宣教员评价 
+        teacherComment:[
+          { 
+            teacherName: '',
+            employeeId: 0,
+            reservaRouteId: 0,
+            routeLaunchedId: 0,
+            commContentEvaluation: 0,
+            commStyleEvaluation: 0,
+            commOverallEvaluation: 0,
+            commOtherOpinions: ''
+          }
+        ],
+        // 课程评价
+        routeComment: {
+          reservaRouteId: 0,
+          routeLaunchedId: 0,
+          commContentEvaluation: 0,
+          commOverallEvaluation: 0,
+          commScheduleEvaluation: 0,
+          commOtherOpinions: ''
+        }
+      }
+    },
+    methods: {
+      closeDetail() {
+        this.$emit('close')
+      },
+      submitRoute() {
+        let errorRoute = true
+        for(let key in this.routeComment) {
+          if (!this.routeComment[key] && key!=='commOtherOpinions') {
+            errorRoute = false
+          }
+        }
+        if(!errorRoute) {
+          this.$message.error('课程评分不完整')
+          return false
+        }
+        let errorTeach = true
+        this.teacherComment.forEach(item => {
+          for(let key in item) {
+            if (!item[key] && key!=='commOtherOpinions') {
+              errorTeach = false
+            }
+          }
+        })
+        if(!errorTeach) {
+        console.log(this.teacherComment[0],this.routeComment)
+          this.$message.error('宣教员评分不完整')
+          return false
+        }
+        // console.log(this.teacherComment[0],this.routeComment)
+        ajax('/portal/comment/saveComment.do',{
+          teacherComment: this.teacherComment[0],
+          routeComment: this.routeComment
+        },false).then(res => {
+          console.log(res)
+          this.$message.success('评价完成')
+          this.$emit('refresh')
+        })
+        
+      }
+    },
+    watch: {
+      dialogShow(val) {
+        this.dialogOrder = val
+        if(val){
+          this.orderForm.reserveCode = JSON.parse(localStorage.getItem('userInfo')).data.reserveCode
+        }
+        // if(!val) {
+        //   ajax('/portal/reserve/getReservaRouteDetailed.do',{
+        //     id: this.routeId
+        //   },'.xu_content').then(res => {
+        //     console.log(res)
+        //     let route = res.data.route
+        //     let reservaRoute = res.data.reservaRoute
+
+        //     this.orderForm['routeSerialNumber'] = route['routeSerialNumber']
+        //     this.orderForm['routeName'] = route['routeName']
+        //     this.orderForm['routePlace'] = route['routePlace']
+        //     this.orderForm['routeDuration'] = route['routeDuration']
+
+        //     this.showIndex = 0
+
+        //     this.routeComment['reservaRouteId'] = reservaRoute['classReservaRouteId']
+        //     this.routeComment['routeLaunchedId'] = reservaRoute['routeLaunchedId']
+
+        //     // console.log(route.relation)
+            
+        //     let teacherCommentArr = []
+        //     route.relation.forEach(item => {
+        //       // return item.courseTeachers
+        //       if(item.courseTeachers.length>0){
+        //         teacherCommentArr = teacherCommentArr.concat(item.courseTeachers)
+        //       }
+        //     })
+        //     if(teacherCommentArr.length>0) {
+        //       teacherCommentArr.forEach(item=>{
+        //         item.employeeId = item.teacherId
+        //         item.reservaRouteId = reservaRoute['classReservaRouteId']
+        //         item.routeLaunchedId = reservaRoute['routeLaunchedId']
+        //         item.commContentEvaluation = 0
+        //         item.commStyleEvaluation = 0
+        //         item.commOverallEvaluation = 0
+        //         item.commOtherOpinions = ''
+        //       })
+        //     }
+        //     // console.log(teacherCommentArr)
+        //     this.teacherComment = teacherCommentArr
+
+        //   })
+        // }
+
+      },
+      routeId(val) {
+
+      },
+      orderObject(val){
+        for(let key in val){
+          this.orderForm[key] = val[key]
+        }
+        
+        this.routeComment.reservaRouteId = val.classReservaRouteId
+        this.routeComment.routeLaunchedId = val.courseId
+
+        this.teacherComment[0].employeeId = val.reservaRouteTeacherId
+        this.teacherComment[0].reservaRouteId = val.classReservaRouteId
+        this.teacherComment[0].routeLaunchedId = val.courseId
+        this.teacherComment[0].teacherName = val.reservaRouteTeacherName
+
+        
+      }
+    },
+    mounted() {
+      this.dialogOrder = this.dialogShow?true:false
+    },
+    components:{
+      XuDialog
+    }
+  }
+</script>
+
+<style lang="scss">
+  .route_comment {
+    $bannerColor:#c01a0c;
+    .dialog_header {
+      background-color: $bannerColor;
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
+      // padding: 20px 50px;
+      color: #fff;
+      line-height: 85px;
+      text-align: center;
+      font-size: 18px;
+
+    }
+    .dialog_content {
+      table {
+        td {
+          width: 50%;
+          padding: 10px;
+          border-bottom: 0.05px #ccc solid;
+          input {
+            outline: none;
+            border: none;
+            width: 60%;
+          }
+        }
+        td + td {
+          border-left:0.05px #ccc solid;
+        }
+        ul,li { list-style: none;}
+        li {
+          border-bottom: 1px dotted #ccc;
+          height: 30px;
+          line-height: 30px;
+          .rate {
+            float: right;
+            .el-rate__item {
+              .el-rate__icon {
+              line-height: 30px;
+
+              }
+            }
+
+          }
+          input.rate {
+            height: 25px;
+            border-bottom: 1px #333 solid;
+          }
+        }
+
+        .teachShow {
+          margin-top: 10px;
+          div {
+            // background-color: $bannerColor;
+            color: #25b1ff;
+            cursor: pointer;
+            margin-bottom: 5px;
+          }
+        }
+      }
+    }
+    .btn {
+      text-align: center;
+      padding-top: 40px;
+      padding-bottom: 50px;
+      .el-button {
+        height: 40px;
+        width: 300px;
+        background-color: $bannerColor;
+        border: none;
+      }
+    }
+
+    
+  }
+    
+</style>
+

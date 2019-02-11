@@ -1,0 +1,35 @@
+<template>
+  <div class="judgeLogin">
+    <div>正在验证中...</div>
+  </div>
+</template>
+
+<script>
+ import ajax from '@/utils/ajax'
+  export default {
+    mounted() {
+      ajax('/authentication/getLoginMessage.do',false,'all').then(res => {
+        
+        if(res.status) {
+          this.$message.success('验证登录成功')
+        }
+        this.$store.dispatch('setZDUniversity',res)
+        this.$router.push({path:'/dashboard'})
+      })
+    }
+  }
+</script>
+<style>
+  .judgeLogin {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .judgeLogin div {
+    margin-top: 200px;
+    font-size: 20px;
+  }
+</style>
+
+
+

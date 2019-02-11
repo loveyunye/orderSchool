@@ -1,0 +1,63 @@
+<template>
+	<div class="layout-container">
+		<nav-bar class="nav"></nav-bar>
+
+		<div class="app-main">
+			<!-- <keep-alive > -->
+				<router-view :key="key"></router-view>
+			<!-- </keep-alive> -->
+		</div>
+
+
+		<div class="admin_footer">
+			党课预约说明 技术支持 ： 宁波数联有限公司 主办单位 ：浙江大学 <br>
+			浙ICP备 00000000 号
+		</div>
+	</div>
+</template>
+
+<script type="text/javascript">
+	import NavBar from './navBar'
+	export default {
+		computed: {
+			key() {
+				return this.$route.fullPath
+			}
+		},
+		components:{
+			NavBar
+		}
+	}
+	
+</script>
+
+<style type="text/scss" lang="scss">
+	.layout-container {
+		// position: fixed;
+		// top: 0;
+		padding-top: 110px;
+		width: 100%;
+		height: 100%;
+		background-color: #f0f0f0;
+		.nav {
+			position: fixed;
+			top: 0;
+			width: 100%;
+			z-index: 200;
+		}
+		.app-main {
+			width: 1300px;
+      margin: 0 auto 0;
+			background-color: #f0f0f0;
+			// min-height: 400px;
+
+		}
+		.admin_footer {
+			margin: 0 auto;
+			color: #666;
+			text-align: center;
+			padding:30px 0 20px;
+			font-size: 12px;
+		}
+	}
+</style>

@@ -1,0 +1,68 @@
+<template>
+  <div class="menuNew">
+    <el-row :gutter="20">
+      <el-col :span="4">
+        <div class="header">
+          新闻公告
+        </div>
+        <ul>
+          <li v-for="(item,index) in routerArr" :key="index">
+            <router-link  :to="item.path" class="linkBtn">{{item.name}}</router-link>
+          </li>
+        </ul>
+
+      </el-col>
+      <el-col :span="20">
+        <router-view />
+
+      </el-col>
+    </el-row>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'newMenu',
+  data() {
+    return {
+      routerArr: [{
+        path: '/news/news/',
+        name: '新闻资讯'
+      },{
+        path: '/news/notice/',
+        name: '通知公告'
+      }]
+    }
+  }
+}
+</script>
+
+<style type="text/scss" lang="scss" scoped>
+	$color: #c01a0c;
+
+  .menuNew {
+    .header {
+      background-color: #c01a0c;
+      color: #fff;
+      line-height: 43px;
+      padding-left: 15px;
+      font-size: 16px;
+    }
+
+    ul {
+      background-color: #fff;
+      height: 300px;
+      padding: 5px 17px 0;
+      li {
+        line-height: 45px;
+        border-bottom: 1px dotted #999;
+        .linkBtn {
+          color: #333;
+        }
+        .active {
+          color: $color;
+        }
+      }
+    }
+  }
+</style>

@@ -1,0 +1,205 @@
+<template>
+	<div>
+		<div class="header">
+			个人信息
+      <div class="sign" @click="dialogUpdate=true"><i class="el-icon-edit-outline"></i></div>
+
+		</div>
+		<ul class="messageForm">
+      <li>学号：{{formUser.reserveCode}}</li>
+      <li>姓名：{{formUser.reserveName}}</li>
+      <li>党支部：{{formUser.reserveCommunity}}</li>
+      <li>所在学院：{{reserveOrganizationStructureName}}</li>
+      <li>联系方式：{{formUser.reservePhone}}</li>
+      <li>邮箱：{{formUser.reserveEmail}}</li>
+    </ul>
+
+
+    <xu-dialog :showDialog='dialogUpdate'  @close="dialogUpdate=false" class="userDialog">
+			<div class="dialog_header">
+				修改
+			</div>
+			<div class="dialog_content">
+				<form>
+					<table style="width:100%" cellpadding="0" cellspacing="0" class="userTable">
+						<tr>
+							<td style="width:20%">学号：</td>
+							<td style="width:40%"><input v-model="formUser.reserveCode" readonly/></td>
+						</tr>
+						<tr>
+							<td>姓名：</td>
+							<td><input v-model="formUser.reserveName"/></td>
+						</tr>
+						<tr>
+							<td>党支部：</td>
+							<td><input v-model="formUser.reserveCommunity"/></td>
+						</tr>
+            <tr>
+							<td>党支部：</td>
+							<td>
+                <select v-model="formUser.reserveOrganizationStructureId">
+                  <option :value="item.organizationStructureId" v-for="(item,index) in collegesOptions" :key="index">{{item.organizationStructureName}}</option>
+                </select>
+              </td>
+						</tr>
+						<tr>
+							<td>联系方式：</td>
+							<td><input v-model="formUser.reservePhone"/></td>
+						</tr>
+						<tr>
+							<td>邮箱：</td>
+							<td><input v-model="formUser.reserveEmail"/></td>
+						</tr>
+					</table>
+
+					<div class="update">
+						<el-button type="primary" @click="updateUserMsg">修改</el-button>
+					</div>
+				</form>
+			</div>
+		</xu-dialog>
+
+	</div>
+</template>
+
+<script type="text/javascript">
+  import ajax from '@/utils/ajax'
+	import XuDialog from '@/components/XuDialog.vue'
+  
+	export default {
+		data() {
+			return {
+        formUser: {
+					reserveCode: '',
+					reserveName: '',
+					reserveCommunity: '',
+					reservePhone: '',
+          reserveEmail: '',
+          reserveOrganizationStructureId: 0,
+          
+        },
+        dialogUpdate: false,
+        collegesOptions:[],
+        reserveOrganizationStructureName:''
+			}
+		},
+		methods: {
+			getUserMsg() {
+				ajax('/portal/user/getReserveMyBaseInfo.do',false,false).then(res => {
+          this.formUser = res.data
+          this.reserveOrganizationStructureName = res.data.reserveOrganizationStructureName
+				})
+      },
+      updateUserMsg() {
+        for(let k in this.formUser){
+          if(!this.formUser[k]){
+            this.$message.error('请完善每一项信息！')
+            return false;
+          }
+        }
+				ajax('/portal/user/updateReserveMyBaseInfo.do',{
+					classReserve: this.formUser
+				},false).then(res => {
+					// this.formUser = res
+					// console.log(res)
+					if(res.code == 0){
+						this.$message.success(res.message)
+            this.dialogUpdate = false
+            this.getUserMsg()
+            
+            this.$store.dispatch('setusername',this.formUser.reserveName)
+					}else {
+						this.$message.error(res.message)
+					}
+				})
+      },
+      
+		},
+		mounted() {
+      
+      ajax('/slianclass-pc-web/portal/common/getColleges.do',false,false).then(res=>{
+        this.collegesOptions = res
+        this.getUserMsg()
+			})
+    },
+    components: {
+      XuDialog
+    }
+
+	}
+	
+</script>
+
+<style lang='scss' scoped>
+	$bannerColor: #c01a0c;
+	.header {
+    background-color: #c01a0c;
+    color: #fff;
+    line-height: 43px;
+    padding-left: 15px;
+    font-size: 16px;
+    position: relative;
+    .sign {
+      position: absolute;
+      color: #fff;
+      right: 20px;
+      top: 0px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+  }
+  .messageForm {
+    background-color: #fff;
+    height: 400px;
+    padding: 5px 17px 0;
+    li {
+      line-height: 45px;
+      border-bottom: 1px dotted #999;
+    }
+
+  }
+  .userDialog {
+    .dialog_header {
+      background-color: $bannerColor;
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
+      line-height: 70px;
+      color: #fff;
+      text-align: center;
+      font-size: 18px;
+    }
+    .dialog_content {
+      padding-bottom: 70px;
+      .userTable  {
+        width: 100%;
+        td {
+          width: 50%;
+          padding: 10px;
+          border-bottom: 1px solid #ccc;
+          input {
+            border: none;
+            outline: none;
+            width: 100%;
+          }
+        }
+        td + td {
+          border-left: 1px solid #ccc;
+        }
+        td:nth-child(1) {
+          text-align: right;
+        }
+      }
+    }
+    .update {
+      // padding: 40px 0 0;
+      padding-top: 60px;
+      text-align: center;
+      .el-button {
+        height: 40px;
+        width: 300px;
+        background-color: $bannerColor;
+        border: none;
+      }
+    }
+  }
+</style>

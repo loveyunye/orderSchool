@@ -1,0 +1,233 @@
+<template>
+  <div>
+    <xu-dialog :showDialog='dialogOrder'  @close="closeDetail" class="route_commentMy" width="600px">
+			<div class="dialog_header">
+        我的点评
+      </div>
+      <div class="dialog_content">
+        <div class="block">
+          <div class="comment">
+            <div>
+              <el-row>
+                <el-col :span="24" v-for="(item,index) in routeComments" :key="index">
+                  <ul>
+                    <li>实际参加党支部:  
+                      <div class="rate">
+                        {{reservaRouteTrueCommunity}}
+                      </div>
+                    </li>
+                    <li>实际参与人数: 
+                      <div class="rate">
+                        {{reservaRouteTrueScale}}人
+                      </div>
+                    </li>
+                  </ul>
+                </el-col>
+              </el-row>
+            </div>
+            <div v-if="routeComments.length==0">暂无评分</div>
+          </div>
+        </div>
+
+        <div class="block">
+          <br>
+          <div class="title">课程评分</div>
+          <div class="comment">
+            <div>
+              <el-row>
+                <el-col :span="24" v-for="(item,index) in routeComments" :key="index">
+                  <ul>
+                    <li>整体评价:  
+                      <div class="rate">
+                        <el-rate v-model="item.commOverallEvaluation" disabled></el-rate>
+                      </div>
+                    </li>
+                    <li>授课内容评价: 
+                      <div class="rate">
+                        <el-rate v-model="item.commContentEvaluation" disabled></el-rate>
+                      </div>
+                    </li>
+                    <li>日程安排评价:
+                      <div class="rate">
+                        <el-rate v-model="item.commScheduleEvaluation" disabled></el-rate>
+                      </div> 
+                    </li>
+                    <li>其他意见: <div class="rate">{{item.commOtherOpinions}}</div> </li>
+
+                  </ul>
+                </el-col>
+              </el-row>
+            </div>
+            <div v-if="routeComments.length==0">暂无评分</div>
+          </div>
+        </div>
+
+        <div class="block">
+          <br/>
+          <div class="title">宣教员评分</div>
+          <div class="comment">
+            <div>
+              <el-row >
+                <el-col :span="24" v-for="(item,index) in teacherComments" :key="index">
+                  <ul>
+                    <li>宣教员:  {{item.teacherName}}
+                    <li>
+                      风貌评价:  
+                      <div class="rate">
+                        <el-rate v-model="item.commStyleEvaluation" disabled ></el-rate>
+                      </div>   
+                    </li>
+                    <li>授课内容评价:
+                      <div class="rate">
+                        <el-rate v-model="item.commContentEvaluation" disabled ></el-rate>
+                      </div>
+                    </li>
+                    <li>综合满意度: 
+                      <div class="rate">
+                        <el-rate v-model="item.commOverallEvaluation" disabled></el-rate>
+                      </div>
+                    </li>
+                    <li>其他意见: <div class="rate">{{item.commOtherOpinions}}</div> </li>
+
+                  </ul>
+                </el-col>
+              </el-row>
+            </div>
+            <div v-if="teacherComments.length==0">暂无评分</div>
+          </div>
+        </div>
+      </div>
+
+      
+		</xu-dialog>
+  </div>
+</template>
+<script>
+  import XuDialog from './XuDialog.vue'
+  import ajax from '@/utils/ajax'
+  import { getNowFormatDate } from  '@/utils'
+
+  export default {
+    props:['dialogShow','orderObject','routeId','reservaRouteTrueScale','reservaRouteTrueCommunity'],
+    data() {
+      return {
+        value1:5,
+        dialogOrder:true,
+        orderDetail: {},
+
+        
+
+        orderForm: {
+          date: getNowFormatDate(),
+          routeName: '',
+          routeSerialNumber: '',
+          routeDuration: '',
+          routePlace: '',
+          reserveName: '',
+          reserveCode: '',
+          // classReservaRouteId: '',
+          // customerId: 0,
+          routeLaunchedId: 0,
+          reservaRouteAddress: '',
+          reservaRoutePhone: '',
+          reservaRouteMail: '',
+          reservaRouteCommunity: '',
+          reservaRouteScale: '',
+        },
+        // 宣教员评价 
+        teacherComments:[
+          
+        ],
+        // 课程评价
+        routeComments: [
+
+        ],
+
+      
+      }
+    },
+    methods: {
+      
+      closeDetail() {
+        
+        this.$emit('close')
+      }
+    },
+    watch: {
+      dialogShow(val) {
+        this.dialogOrder = val
+        if(val) {
+          ajax('/slianclass-pc-web/portal/comment/getCommentByReservaRouteId.do',{
+            // reservaRouteId: this.routeId
+            reservaRouteId: this.routeId
+          },'.xu_content').then(res => {
+            if(res.code === 1){
+              this.$message.error(res.message)
+              this.routeComments = []
+              this.teacherComments = []
+            } else {
+              this.routeComments = [res.data.routeComment]
+              this.teacherComments = [res.data.teacherComment]
+            }
+
+            
+
+     
+          })
+        }
+
+      },
+      routeId(val) {
+      }
+    },
+    mounted() {
+      this.dialogOrder = this.dialogShow?true:false
+
+      
+
+      
+
+    },
+    components:{
+      XuDialog
+    }
+  }
+</script>
+
+<style lang="scss">
+  .route_commentMy {
+    $bannerColor:#c01a0c;
+    .dialog_header {
+      background-color: $bannerColor;
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
+      // padding: 20px 50px;
+      color: #fff;
+      line-height: 85px;
+      text-align: center;
+      font-size: 18px;
+
+    }
+    .dialog_content {
+      padding: 20px 50px 50px;
+      div.comment {
+        .rate {
+          float:right;
+        }
+        li {
+          line-height: 30px;
+          border-bottom: 1px dotted #ccc;
+        }
+
+      }
+      
+    }
+    .title {
+      font-size: 18px;
+    }
+
+    
+  }
+    
+</style>
+

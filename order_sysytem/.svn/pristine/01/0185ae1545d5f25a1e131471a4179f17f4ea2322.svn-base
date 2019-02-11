@@ -1,0 +1,143 @@
+import Vue from 'vue'
+import Router from 'vue-router'
+
+import Layout from '@/view/layout'
+/**
+ * created by xuin
+ * date 2018-09-10
+ * 路由配置
+ */
+
+Vue.use(Router)
+
+
+export default new Router({
+  linkActiveClass: 'active',
+  routes: [
+    {
+      path: '/',
+      component: Layout,
+      redirect: 'dashboard',
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('@/view/login/login')
+    },
+    {
+      path: '/judgeLogin',
+      name: 'judgeLogin',
+      component: () => import('@/view/judgeLogin')
+    },
+    {
+      path: '/dashboard',
+      component: Layout,
+      redirect: '/dashboard/index',
+      children:[
+        {
+          path: 'index',
+          name: 'dashboardIndex',
+          component: () => import('@/view/dashboard/dashboard'),
+        }
+      ]
+    },
+    {
+      path: '/news',
+      component: Layout,
+      redirect: '/news/news/newsIndex',
+      children:[
+        {
+          path: 'news',
+          component: () => import('@/view/news/menu'),
+          redirect: '/news/news/newsIndex',
+          children:[
+            { path: 'newsIndex', name: 'newsIndex', component: () => import('@/view/news/news')},
+            { path: 'detail/:id', name: 'newsDetail', component: () => import('@/view/news/detail')},
+          ]
+        },
+        {
+          path: 'notice',
+          component: () => import('@/view/news/menu'),
+          redirect: '/news/notice/noticeIndex',
+          
+          children:[
+
+            { path: 'noticeIndex', name: 'noticeIndex', component: () => import('@/view/news/notice')},
+            { path: 'noticeDetail/:id', name: 'noticeDetail', component: () => import('@/view/news/noticeDetail')},
+          ]
+        },
+      ]
+    },
+    {
+      path: '/personal',
+      component: Layout,
+      // redirect: '/personal/index',
+      // children:[
+      //   {
+      //     path: 'index',
+      //     name: 'personalIndex',
+      //     component: () => import('@/view/personal/personal'),
+      //   }
+      // ]
+
+      redirect: '/personal/menu/message',
+      children:[
+        {
+          path: 'menu',
+          component: () => import('@/view/personal/menu'),
+          children:[
+            { path: 'message', name: 'message', component: () => import('@/view/personal/message')},
+            // { path: 'present', name: 'present', component: () => import('@/view/personal/present')},
+            // { path: 'history', name: 'history', component: () => import('@/view/personal/history')},
+            { path: 'personal', name: 'personal', component: () => import('@/view/personal/personal')},
+            { path: 'reservation', name: 'reservation', component: () => import('@/view/personal/reservation'), redirect: '/personal/menu/reservation/present',children:[
+
+              { path: 'present', name: 'present', component: () => import('@/view/personal/present')},
+              { path: 'history', name: 'history', component: () => import('@/view/personal/history')},
+              
+            ]},
+          ]
+        }
+      ]
+
+    },
+    {
+      path: '/convention',
+      component: Layout,
+      redirect: '/convention/index',
+      children:[
+        {
+          path: 'index',
+          name: 'conventionIndex',
+          component: () => import('@/view/convention/convention'),
+        }
+      ]
+    },
+    
+
+    // {
+    //   path: '/',
+    //   component: Layout,
+    //   redirect: 'dashboard',
+    //   children: [{
+    //     path: 'dashboard',
+    //     name: 'dashboard',
+    //     component: () => import('@/view/dashboard/dashboard'),
+    //   },
+    //   {
+    //     path: 'news',
+    //     name: 'news',
+    //     component: () => import('@/view/news/news'),
+    //   },{
+    //     path: 'personal',
+    //     name: 'personal',
+    //     component: () => import('@/view/personal/personal')
+    //   },{
+    //     path: 'convention',
+    //     name: 'convention',
+    //     component: () => import('@/view/convention/convention')
+    //   }
+    //   ]
+    // },    
+  ]
+})
