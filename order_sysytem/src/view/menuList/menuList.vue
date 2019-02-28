@@ -64,6 +64,12 @@
 					label="类型">
 				</el-table-column>
 
+				<el-table-column align="center"
+					prop="dinner_price"
+					width="80"
+					label="价格(元)">
+				</el-table-column>
+
 				<el-table-column label="状态"  align="center" width="100">
 					<template slot-scope="scope">
 						<span>{{scope.row["status"]?'推荐':'一般'}}</span>

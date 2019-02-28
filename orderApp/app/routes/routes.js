@@ -19,6 +19,8 @@ router.get('/sys/user/getUser',userController.getUser)
 router.get('/sys/user/updateUser',userController.updateUser)
 router.get('/sys/user/createUser',userController.createUser)
 router.get('/sys/user/userTypes',userController.userTypes)
+router.get('/sys/user/getUserList',userController.getUserList)
+router.get('/sys/user/deleteUser',userController.deleteUser)
 
 // 菜单操作
 router.get('/sys/dinner/getDinner', dinnerController.getDinner )

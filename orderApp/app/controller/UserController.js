@@ -12,7 +12,7 @@ const UserController = (function(){
       res.send(result)
     }).catch(error => {})
   }
-  // 修改密码
+  // 修改信息
   UserC.prototype.updateUser = function(req, res){
     dataHandler(UserSql.updateSql(Object.assign({},usermodel,req.query))).then(result => {
       res.send(result)
@@ -27,6 +27,21 @@ const UserController = (function(){
   // 获取客户类型
   UserC.prototype.userTypes = function(req, res){
     dataHandler(UserSql.getCustomerType()).then(result => {
+      res.send(result)
+    }).catch(error => {})
+  }
+  // 获取客户列表
+  UserC.prototype.getUserList = function(req,res){
+    dataHandler(UserSql.getUserList(req.query)).then(result => {
+      dataHandler(UserSql.getUserNum(req.query)).then(num => {
+        res.send({data:result,total:num[0].num})
+      })
+    }).catch(error => {})
+  }
+
+  // 删除客户 
+  UserC.prototype.deleteUser = function(req,res){
+    dataHandler(UserSql.deleteSql(req.query.userIds)).then(result => {
       res.send(result)
     }).catch(error => {})
   }

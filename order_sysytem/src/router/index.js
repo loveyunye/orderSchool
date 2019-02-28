@@ -87,7 +87,7 @@ export const constantRouterMap = [
     icon: 'tickets',
     redirect: '/personal/message',
     title:'个人信息',
-    auth:'business',
+    auth:'common',
     children:[
       {
         path: 'message',

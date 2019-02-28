@@ -72,22 +72,7 @@ const user = {
     },
 
 
-    // 浙大统一身份登录   设置信息
-    setZDUniversity({commit},userMessage) {
-      console.log(userMessage)
-      if(userMessage.status) {
-        setUserName(userMessage.reserve.reserveName) 
-        commit('SET_NAME',userMessage.reserve.reserveName)
-
-        if(userMessage.user.type == '客户') {
-          setToken('admin')
-          commit('SET_TOKEN','admin')
-          localStorage.setItem('userDetail',JSON.stringify(userMessage))
-        }else {
-          Cookie.set('adminAccount',JSON.stringify(userMessage),{ expires: 0.1 })
-        }
-      }
-    },
+    
 
 
     GetUserInfo({commit,state}){
@@ -109,6 +94,15 @@ const user = {
           resolve(false)
         }
       })
+    },
+    // 保存修改后的个人信息
+    setUserMess({commit}, userObject){
+      commit('SET_NAME',userObject.name)
+      setUserName(userObject.name)
+      // 设置个人信息
+      setMessage(JSON.stringify(userObject))
+      commit('SET_MESS',JSON.stringify(userObject))
+      
     },
 
     // 设置名字

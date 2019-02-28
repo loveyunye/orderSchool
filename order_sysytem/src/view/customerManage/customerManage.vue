@@ -1,52 +1,31 @@
 <template>
-	<div class="dashboard">
-		客户管理
+	<div class="customerManage">
+		<el-tabs v-model="activeName2" >
+			<el-tab-pane label="商家管理" name="first">
+				<business-manage/>
 
+
+			</el-tab-pane>
+			<el-tab-pane label="小程序用户管理" name="second">
+				
+
+
+			</el-tab-pane>
+		</el-tabs>
 	</div>
 </template>
 
 <script type="text/javascript">
-	import ajax from '@/utils/ajax.js'
-	import { distinct } from '@/utils'
-	import RouteDetail from '@/components/RouteDetail'
-	import RouteInstructions from '@/components/RouteInstructions'
-	import RouteOrder from '@/components/RouteOrder'
-  import BaseDialog from '@/components/BaseDialog'
-
+	import BusinessManage from './businessManage.vue'
 
 	export default {
 		data() {
 			return {
-				introduction: '',
-				newsList: [],
-				noticeList: [],
-				routeList: [],
-				newsImgs: [],
-				cnameArr: ['课程编号','课程名称','关键词','包含基地','所属区域'],
-				itemArr: ['courseSerialNumber','courseName','courseThemeName','baseName','coursePlaceName'],
-				itemWidth: ['120','300','300','280','200'],
-
-				// dialog_route_detail
-				routeDetail: {teachArr:[]},
-				dialogDetail: false,
-
-				// dialog_route_instructions
-				dialogInstruction: false,
-				// dialog_route_order
-				dialogOrder: {},
-				dialogOrderShow:false,
-
-
-				// 增加基地
-				baseDialogShow: false,
-        baseId:0,
-
+				activeName2: "first"
 			}
 		},
-		methods: {
-		},
 		components:{
-			RouteDetail,RouteInstructions,RouteOrder,BaseDialog
+			BusinessManage
 		}
 	}
 	
@@ -54,5 +33,20 @@
 
 <style lang="scss" >
 	$color: #c01a0c;
+	.customerManage {
+		.el-tabs__nav-scroll {
+			overflow: hidden;
+			background-color: #fff;
+			padding-left: 20px;
+			line-height: 50px;
+			height: 50px;
+		}
+		.el-tabs__header {
+			margin: 0;
+		}
+		.el-tabs__item {
+			font-weight: 400;
+		}
 
+	}
 </style>

@@ -1,7 +1,7 @@
 
 
 mysql:
-  host:   '101.132.44.31' #测试
+  host:   '47.102.192.173' #测试
   user:   'root'
-  password: 'root'
+  password: 'Xu123456'
   database: 'SchoolOrder'
