@@ -1,15 +1,16 @@
 // pages/login/login.js
 const app = getApp()
 Page({
-
   /**
    * 页面的初始数据
    */
   data: {
     phone:'15879021032',
     password: '123456',
-    confirmPassword: '',
+    confirmPassword: '123456',
     hasRegister: true,
+    dialog: null,
+    popMessage: '提示信息'
   },
   // 双向绑定
   bindKeyPhone(e){
@@ -27,17 +28,28 @@ Page({
       confirmPassword: e.detail.value
     })
   },
-  // 
+  // 切换注册
+  registerTarget() {
+    this.setData({
+      hasRegister: !this.data.hasRegister
+    })
+  },
+  // 弹出层
+  popMessage(mess){
+    const vm = this;
+    vm.popMess.popShowHide();
+    vm.setData({
+      popMessage: mess
+    });
+  },
+  // 登录
   userInfoHandler: function (e) {
-    app.globalData.userInfo = e.detail.userInfo
-    let userObject = e.detail.userInfo
-    console.log(app.globalData)
-
-    // wx.showLoading({
-    //   title: '登录中',
-    // })
+    let vm = this
+    wx.showLoading({
+      title: '登录中',
+    })
     wx.request({
-      url: `http://localhost:3000/mobile/customer/getUser`,
+      url: `${app.globalData.urlHead}/mobile/customer/getUser`,
       data: {
         password: this.data.password,
         phone: this.data.phone
@@ -46,29 +58,14 @@ Page({
         'content-type': 'application/json' // 默认值
       },
       success(res) {
-        // wx.hideLoading()
-        
-        console.log(res)
+        wx.hideLoading()
         if(res.data.length ===0 ){
-          wx.showToast({
-            title: '密码账号不存在',
-            // icon: 'loading',
-            duration: 2000
-          })
-          // wx.showModal({
-          //   title: '提示',
-          //   content: '这是一个模态弹窗',
-          //   success(res) {
-          //     if (res.confirm) {
-          //       console.log('用户点击确定')
-          //     } else if (res.cancel) {
-          //       console.log('用户点击取消')
-          //     }
-          //   }
-          // })
+          vm.popMessage('登录信息有误')
         }else {
+          app.globalData.userInfo = res.data[0]
+          wx.setStorageSync('userInfo', res.data[0])
           wx.switchTab({
-            url: '/pages/order/order',   //注意switchTab只能跳转到带有tab的页面，不能跳转到不带tab的页面
+            url: '/pages/food/food',   //注意switchTab只能跳转到带有tab的页面，不能跳转到不带tab的页面
           })
         }
         
@@ -76,61 +73,59 @@ Page({
     })
   },
   registerHandler(e){
+    const vm = this
+    if (!(/^1[34578]\d{9}$/.test(this.data.phone))){
+      vm.popMessage('手机号格式有误')
+      return
+    }
+    if(this.data.password!==this.data.confirmPassword){
+      vm.popMessage('两次密码不同')
+      return
+    }
+    console.log(submitObj)
+    const submitObj = Object.assign({}, e.detail.userInfo,{
+      password: this.data.password,
+      phone: this.data.phone,
+      remark: '暂无',
+      address: '暂无'
+    })
+    wx.showLoading({
+      title: '加载中',
+    })
+
+
+    wx.request({
+      url: `${app.globalData.urlHead}/mobile/customer/createUser`,
+      data: submitObj,
+      header: {
+        'content-type': 'application/json' // 默认值
+      },
+      success(res) {
+        wx.hideLoading()
+        if(res.data.handler === false){
+          vm.popMessage('手机号已被注册');
+        } else {
+          app.globalData.userInfo = Object.assign({},submitObj,{mobile_userId: res.data.inserId})
+          wx.setStorageSync('userInfo', app.globalData.userInfo)
+          wx.switchTab({
+            url: '/pages/food/food',   //注意switchTab只能跳转到带有tab的页面，不能跳转到不带tab的页面
+          })
+        }
+      }
+    })
     
   },
-  registerTarget(){
-    this.setData({
-      hasRegister: !this.data.hasRegister
-    })
-  },
-  /**
-   * 生命周期函数--监听页面加载
-   */
-  onLoad: function (options) {
-
-  },
-
+  
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
-  onReady: function () {
-
-  },
-  
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function () {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function () {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function () {
-
+  onReady: function () { 
+    if(app.globalData.userInfo){
+      wx.switchTab({
+        url: '/pages/food/food',   //注意switchTab只能跳转到带有tab的页面，不能跳转到不带tab的页面
+      })
+    }
+    this.popMess = this.selectComponent('#popMess');
   },
 
   /**
@@ -138,5 +133,5 @@ Page({
    */
   onShareAppMessage: function () {
 
-  }
+  },
 })

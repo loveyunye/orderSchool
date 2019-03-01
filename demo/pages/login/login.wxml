@@ -1,5 +1,11 @@
 <view class='view_login'>
-  <view class='title_icon'></view>
+  <pop id='dialog' id='popMess' message="{{popMessage}}"  bind:cancelEvent="_cancelEvent" bind:confirmEvent="_confirmEvent">
+  </pop>
+
+  <view class='title_icon'>
+    <!-- <image src='http://localhost:3000/uploads/_file-1551318970204'></image> -->
+    做一个，爱吃饭的学生
+  </view>
   <!-- {{phone}} - {{password}} -->
   <view class='login_container'>
     <form>

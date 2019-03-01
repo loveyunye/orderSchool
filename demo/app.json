@@ -1,11 +1,12 @@
 {
   "pages": [
+    "pages/login/login",
     "pages/food/food",
     "pages/order/order",
     "pages/user/user",
     "pages/index/index",
-    "pages/login/login",
-    "pages/logs/logs"
+    "pages/logs/logs",
+    "pages/store/store"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -16,12 +17,19 @@
   "tabBar": {
     "color": "#696969",
     "selectedColor": "#1296db",
+    "borderStyle": "black",
     "list": [
       {
         "pagePath": "pages/food/food",
-        "text": "外卖",
+        "text": "菜单",
         "iconPath": "assets/img/dinner.png",
         "selectedIconPath": "assets/img/dinner_select.png"
+      },
+      {
+        "pagePath": "pages/store/store",
+        "text": "店铺",
+        "iconPath": "assets/img/store.png",
+        "selectedIconPath": "assets/img/store_select.png"
       },
       {
         "pagePath": "pages/order/order",

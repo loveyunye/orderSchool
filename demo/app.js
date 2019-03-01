@@ -1,11 +1,15 @@
 //app.js
 App({
   onLaunch: function () {
+    const vm = this
     // 展示本地存储能力
     var logs = wx.getStorageSync('logs') || []
     logs.unshift(Date.now())
     wx.setStorageSync('logs', logs)
-
+    var userInfo = wx.getStorageSync('userInfo') || null
+    if(userInfo){
+      this.globalData.userInfo = userInfo
+    }
     // 登录
     wx.login({
       success: res => {
@@ -32,10 +36,23 @@ App({
         }
       }
     })
+
+
+    // 获取菜单品种信息
+    wx.request({
+      url: `${this.globalData.urlHead}/sys/dinner/dinnerType`,
+      header: {
+        'content-type': 'application/json' // 默认值
+      },
+      success(res) {
+        vm.globalData.dinnerType = res.data.map(item => item)
+      }
+    })
   },
   globalData: {
     userInfo: null,
-    urlHead: 'http://localhost:3000'
+    urlHead: 'http://localhost:3000',
+    dinnerType: []
   },
 
 })

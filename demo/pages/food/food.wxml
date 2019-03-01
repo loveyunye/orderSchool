@@ -1,6 +1,19 @@
 <!--pages/food.wxml-->
 <view class='foodView'>
+  <view class='foodSearch'>
+    <view class='dinnerType'>{{typeName}}</view>
+    <view class='dinnerInput'>
+      <input placeholder='输入菜单名搜索' confirm-type='search' bindconfirm="inputSearch"></input>
+    </view>
+  </view>
+  <view class='dinner-select'  animation="{{moveData}}">
+    <view wx:key="{{item.dinnerType_id}}" wx:for="{{dinnerType}}" class='dinner-item' >
+      <text>{{item.type_name}}</text>
+    </view>
+  </view>
+
   <view wx:key="{{item.dinner_id}}" wx:for="{{dinnerList}}" >
     <text>{{item.dinner_name}}</text>
   </view>
+
 </view>

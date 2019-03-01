@@ -3,33 +3,42 @@
   width: 100%;
   height: 100vh;
   /* background-image: url('http://101.132.44.31/banner_14.png'); */
-  background-color: #ccc;
+  /* background-color: #ccc; */
   background-size: cover;
   /* background-size: 100% auto; */
   /* background-position: center 600; */
 }
 .title_icon {
-  height: 180px;
-  line-height: 180px;
+  height: 35vh;
+  line-height: 35vh;
+  
   text-align: center;
-  font-size: 30px;
+  font-size: 28px;
   /* color: #1296db; */
-  font-weight: bold;
+  /* font-weight: bold; */
+  /* background-image: url('http://localhost:3000/uploads/_file-1551318970204'); */
+  background-color:  #1296db;
+  background-repeat: no-repeat;
+  background-size: 30%;
+  background-position: 50% 50%;
+  font-family: "Microsoft YaHei","黑体","宋体",sans-serif;
+  font-weight: lighter;
+  color: #fff;
 }
 .login_container {
   padding:20px 40px;
 }
 .login_container input {
-  line-height: 30px;
-  height: 30px;
+  line-height: 28px;
+  height: 28px;
   padding: 10px;
-  border-bottom: 1px solid #fff;
+  border-bottom: 1px solid #1296db;
   margin-bottom: 16px;
   font-size: 16px;
-  color: #fff;
+  color: #1296db;
 }
 .login_container .phcolor {
-  color: #f1f1f1;
+  color: #ccc;
 }
 
 .login_container button {
@@ -52,7 +61,7 @@
   color: #fff;
   width: 150px;
   border-radius: 15px;
-  background-color: rgba(255, 255, 255, 0.4);
+  background-color: rgba(0, 0, 0, 0.1);
 }
 .registerText button::after{
   border: none;

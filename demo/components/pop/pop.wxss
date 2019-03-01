@@ -1,0 +1,16 @@
+/* pages/common/pop/pop.wxss */
+.wx_pop {
+  position: fixed;
+  right: -140px;
+  top: 10px;
+  background-color: rgba(0, 0, 0, .2);
+  line-height: 32px;
+  height: 32px;
+  padding: 0 20px;
+  border-top-left-radius: 16px;
+  border-bottom-left-radius: 16px;
+  font-size: 14px;
+  color: #eee;
+  text-align: center;
+  width: 100px;
+}

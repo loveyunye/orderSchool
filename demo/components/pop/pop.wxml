@@ -1,0 +1,4 @@
+<!--pages/common/pop/pop.wxml-->
+<view class='wx_pop'   hidden="{{!isShow}}" animation="{{moveData}}" bindtap='showDialog'>
+  {{message}}
+</view>
