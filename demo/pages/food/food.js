@@ -48,6 +48,11 @@ Page({
     })
   },
 
+  setMenu(item){
+    console.log(item)
+  },
+
+
   /**
    * 生命周期函数--监听页面加载
    */

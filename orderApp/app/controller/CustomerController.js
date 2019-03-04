@@ -11,9 +11,21 @@ const CustomerController = (function(){
   }
   // 创建客户
   CustomerC.prototype.createCustomer = function(req,res){
-    dataHandler(CustomerSql.createUser(req.query)).then(result => {
-      res.send(result)
-    }).catch(error => {})
+    
+    dataHandler(CustomerSql.queryByphone(req.query.phone)).then(userArr => {
+      console.log(userArr)
+      if(userArr.length > 0){
+        res.send({
+          message: '用户已被注册',
+          handler: false
+        })
+      } else {
+        dataHandler(CustomerSql.createUser(req.query)).then(result => {
+
+          res.send(result)
+        }).catch(error => {})
+      }
+    })
   }
   // 修改信息
   CustomerC.prototype.updateCustomer = function(req,res){

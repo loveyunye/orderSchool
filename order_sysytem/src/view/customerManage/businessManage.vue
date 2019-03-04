@@ -31,11 +31,11 @@
         <el-table-column align="center"
           prop="name"
           label="商家名"
-          width="120">
+          width="100">
         </el-table-column>
         <el-table-column align="center"
           label="头像"
-          width="180">
+          width="100">
           <template slot-scope="scope">
             <el-popover 
               placement="right"
@@ -46,9 +46,11 @@
           </template>
         </el-table-column>
 
+       
+
         <el-table-column
-          prop="address" align="center"
-          label="地址" width="200">
+          prop="phone" align="center"
+          label="联系方式" width="100">
         </el-table-column>
 
         <el-table-column
@@ -58,12 +60,16 @@
 
         <el-table-column align="center"
           label="密码"
-          width="180">
+          width="100">
           <template slot-scope="scope">
             ******
           </template>
         </el-table-column>
 
+         <el-table-column
+          prop="address" align="center"
+          label="地址" width="200">
+        </el-table-column>
         
        
 
@@ -124,7 +130,10 @@
               <el-input v-model="userObject.accout"  style="width:90%;" placeholder=""></el-input>
             </el-form-item>
             <el-form-item label="账号密码:"  prop="password">
-              <el-input v-model="userObject.password"   style="width:90%;" placeholder=""></el-input>
+              <el-input v-model="userObject.password"  disabled  style="width:90%;" placeholder=""></el-input>
+            </el-form-item>
+            <el-form-item label="联系方式:"  prop="phone">
+              <el-input v-model="userObject.phone"   style="width:90%;" placeholder=""></el-input>
             </el-form-item>
             <el-form-item label="备注信息:"  prop="remark">
               <el-input v-model="userObject.remark"  type="textarea" style="width:90%;" placeholder=""></el-input>
@@ -169,7 +178,8 @@
           portrait: '',
           accout: '',
           password: '',
-          type_id:2
+          type_id:2,
+          phone:''
 				},
 				imageUrl: '',
 				uneditStatus: true,
@@ -180,7 +190,8 @@
         	type_name: [{  required: true, message: '不能为空', trigger: 'change' }],
         	portrait: [{  required: true, message: '不能为空', trigger: 'change' }],
         	accout: [{  required: true, message: '不能为空', trigger: 'change' }],
-        	password: [{  required: true, message: '不能为空', trigger: 'change' }]
+        	password: [{  required: true, message: '不能为空', trigger: 'change' }],
+        	phone: [{  required: true, message: '不能为空', trigger: 'change' }]
 				},
 
 
@@ -211,7 +222,7 @@
         this.imageUrl = URL.createObjectURL(file.raw);
       },
       beforeAvatarUpload(file) {
-        const isJPG = file.type === 'image/jpeg';
+        const isJPG = file.type === 'image/jpeg' || 'image/png';
         const isLt2M = file.size / 1024 / 1024 < 2;
         if (!isJPG) {
           this.$message.error('上传头像图片只能是 JPG 格式!');
@@ -268,6 +279,7 @@
 						this.userObject[key] = ''
           }
           this.userObject.type_id = 2
+          this.userObject.password = 123456
           this.imageUrl = '';
 
 				} 

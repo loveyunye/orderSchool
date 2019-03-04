@@ -7,7 +7,7 @@
     </view>
   </view>
   <view class='dinner-select'  animation="{{moveData}}">
-    <view wx:key="{{item.dinnerType_id}}" wx:for="{{dinnerType}}" class='dinner-item' >
+    <view catchtap="{{setMenu}}" wx:key="{{item.dinnerType_id}}" wx:for="{{dinnerType}}" class='dinner-item' >
       <text>{{item.type_name}}</text>
     </view>
   </view>

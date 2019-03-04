@@ -34,6 +34,7 @@ router.get('/sys/dinner/dinnerType', dinnerController.getDinnerType )
 
 // 图片上传
 router.post('/sys/upload/img', basicController.uploadImg )
+router.post('/sys/template/order', basicController.sendAppTemplate )
 
 
 // 移动端客户操作

@@ -36,21 +36,7 @@ export const constantRouterMap = [
       }
     ]
   },
-  {
-    path: '/customerManage',
-    component: Layout,
-    redirect: '/customerManage/index',
-    icon: 'setting',
-    title:'客户管理',
-    auth:'admin',
-    children:[
-      {
-        path: 'index',
-        name: 'customerManageIndex',
-        component: () => import('@/view/customerManage/customerManage'),
-      }
-    ]
-  },
+  
   {
     path: '/orderList',
     component: Layout,
@@ -78,6 +64,21 @@ export const constantRouterMap = [
         path: 'index',
         name: 'menuListIndex',
         component: () => import('@/view/menuList/menuList'),
+      }
+    ]
+  },
+  {
+    path: '/customerManage',
+    component: Layout,
+    redirect: '/customerManage/index',
+    icon: 'setting',
+    title:'客户管理',
+    auth:'admin',
+    children:[
+      {
+        path: 'index',
+        name: 'customerManageIndex',
+        component: () => import('@/view/customerManage/customerManage'),
       }
     ]
   },

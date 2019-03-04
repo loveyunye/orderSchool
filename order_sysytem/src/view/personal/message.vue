@@ -26,6 +26,9 @@
 					<el-form-item label="用户类型:"  prop="type_name">
 						<el-input v-model="userObject.type_name" style="width:90%;" disabled placeholder=""></el-input>
 					</el-form-item>
+					<el-form-item label="联系方式:"  prop="phone" v-if="userObject.user_id!==1">
+						<el-input v-model="userObject.phone" :disabled="uneditStatus"  style="width:90%;" placeholder=""></el-input>
+					</el-form-item>
 					<el-form-item label="头像地址:"  prop="portrait">
 						<el-input v-model="userObject.portrait"  style="width:90%;" disabled  placeholder=""></el-input>
 					</el-form-item>
@@ -35,6 +38,8 @@
 					<el-form-item label="账号密码:"  prop="password">
 						<el-input v-model="userObject.password" :disabled="uneditStatus" :type="uneditStatus?'password':'text'" style="width:90%;" placeholder=""></el-input>
 					</el-form-item>
+
+					
 					<el-form-item label="备注信息:"  prop="remark">
 						<el-input v-model="userObject.remark" :disabled="uneditStatus" type="textarea" style="width:90%;" placeholder=""></el-input>
 					</el-form-item>
@@ -70,7 +75,8 @@ import { valid } from 'semver';
 			return {
 				userObject:{
 					user_id: '',
-					address:''
+					address:'',
+					phone: ''
 					
 				},
 				imageUrl: '',
@@ -82,7 +88,8 @@ import { valid } from 'semver';
         	type_name: [{  required: true, message: '不能为空', trigger: 'change' }],
         	portrait: [{  required: true, message: '不能为空', trigger: 'change' }],
         	accout: [{  required: true, message: '不能为空', trigger: 'change' }],
-        	password: [{  required: true, message: '不能为空', trigger: 'change' }]
+        	password: [{  required: true, message: '不能为空', trigger: 'change' }],
+        	phone: [{  required: true, message: '不能为空', trigger: 'change' }]
 				},
 			}
 		},

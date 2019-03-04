@@ -5,3 +5,6 @@ mysql:
   user:   'root'
   password: 'Xu123456'
   database: 'SchoolOrder'
+app: 
+  appId:      'wxc120028248996483'
+  appSecret: 'c7b4253df55734869b8a3824975894a4'

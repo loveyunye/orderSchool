@@ -2,7 +2,7 @@
 	<div class="login-container">
 		<div class="loginHeader">
 			<!-- <img src="../../assets/title_new.png" width="700px"> -->
-			校园订餐
+			让您，爱上吃饭
 		</div>
 		<!-- <router-link to="/">登陆</router-link> -->
 		<el-form class="login-form"  :model="loginForm" :rules="loginRules" ref="loginForm">
@@ -112,9 +112,10 @@
 			text-align: center;
 			line-height: 200px;
 			height: 200px;
-			font-size: 40px;
+			font-size: 60px;
+			font-weight: 200;
 			color: #fff;
-			font-family: "KaiTi"," DFKai-SB","STKaiti";
+			// font-family: "KaiTi"," DFKai-SB","STKaiti";
 
 			// overflow: hidden;
 

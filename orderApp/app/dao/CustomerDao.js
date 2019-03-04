@@ -7,15 +7,21 @@ const CustomerSql = {
   },
   updateSql:function(obj){
     return `UPDATE SchoolOrder.mobile_customer 
-    SET name = '${obj.name}', phone = '${obj.phone}', 
+    SET name = '${obj.nickName}', phone = '${obj.phone}', 
     password = '${obj.password}', avataUrl = '${obj.avataUrl}',address = '${obj.address}',remark = '${obj.remark}'
     WHERE (mobile_userId = '${obj.customerId}');
     `
   },
   createUser: function(userStr){
-    return `INSERT INTO SchoolOrder.mobile_customer (name,phone,password, avataUrl, address, remark)
-    VALUES ('${userStr.name}', '${userStr.phone}', '${userStr.password}', '${userStr.avataUrl}', '${userStr.address}',
+    return `INSERT INTO SchoolOrder.mobile_customer (nickName,phone,password, avatarUrl, address, gender, remark)
+    VALUES ('${userStr.nickName}', '${userStr.phone}', '${userStr.password}', '${userStr.avatarUrl}', '${userStr.address}',
+    '${userStr.gender}',
     '${userStr.remark}')`;
+  },
+  queryByphone: function(phone){
+    return `SELECT * FROM SchoolOrder.mobile_customer
+    WHERE
+    phone = '${phone}'`
   }
 }
 export default CustomerSql

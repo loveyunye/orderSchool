@@ -10,6 +10,7 @@ const UserSql = {
   updateSql:function(obj){
     return `UPDATE SchoolOrder.sys_user 
     SET accout = '${obj.accout}', password = '${obj.password}', address = '${obj.address}', portrait = '${obj.portrait}', 
+    phone = '${obj.phone}',
     name = '${obj.name}', remark = '${obj.remark}' WHERE (user_id = '${obj.user_id}');
     `
   },
@@ -19,8 +20,8 @@ const UserSql = {
   },
 
   createUser: function(userStr){
-    return `INSERT INTO SchoolOrder.sys_user (accout, password, name, type_id, remark, portrait, address)
-    VALUES ('${userStr.accout}', '${userStr.password}', '${userStr.name}', '${userStr.type_id}', '${userStr.remark}', '${userStr.portrait}','${userStr.address}')`;
+    return `INSERT INTO SchoolOrder.sys_user (accout, password, name, type_id, remark, portrait, address, phone)
+    VALUES ('${userStr.accout}', '${userStr.password}', '${userStr.name}', '${userStr.type_id}', '${userStr.remark}', '${userStr.portrait}','${userStr.address}','${userStr.phone}')`;
   },
   getCustomerType: function(){
     return `SELECT * FROM SchoolOrder.customer_type;`
