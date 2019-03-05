@@ -13,14 +13,14 @@ module.exports = {
     proxyTable: {
       '/sys':{
           // target:"http://192.168.1.115:8081",
-          target:"http://localhost:3000",
+          target:"http://localhost:3001",
           // target:"http://www.sliansoft.com",
           changeOrigin:true,
           pathRewrite:{'^/sys':'/sys'}
       },
       '/upload':{
         // target:"http://192.168.1.115:8081",
-        target:"http://localhost:3000",
+        target:"http://localhost:3001",
         // target:"http://www.sliansoft.com",
         changeOrigin:true,
         pathRewrite:{'^/upload':'/upload'}

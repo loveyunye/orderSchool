@@ -23,7 +23,7 @@ App({
         //     console.log(res.data.openid) //获取openid
         //   }
         // })
-        console.log(res.code)
+        // console.log(res.code)
 
       }
     })
@@ -62,7 +62,7 @@ App({
   },
   globalData: {
     userInfo: null,
-    urlHead: 'http://localhost:3000',
+    urlHead: 'http://localhost:3001',
     dinnerType: []
   },
 
