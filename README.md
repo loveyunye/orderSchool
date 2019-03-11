@@ -5,5 +5,5 @@
 ## Build Setup
 
 ``` bash
-  components form three parts
+  composed of three parts
 ```
