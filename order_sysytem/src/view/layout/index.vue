@@ -7,7 +7,7 @@
 			<el-col :span="21">
 				<div class="layout-admin">
 					<nav-bar class="nav"></nav-bar>
-					<div class="app-main">
+					<div class="app-main" :style="{height: minWidth}">
 						<!-- <keep-alive > -->
 							<router-view :key="key"></router-view>
 						<!-- </keep-alive> -->
@@ -15,7 +15,7 @@
 
 
 					<div class="admin_footer">
-						校园订餐@2019 
+						校园订餐@2019  {{minWidth}}
 						Created by fu
 					</div>
 				</div>
@@ -34,6 +34,11 @@
 	import NavBar from './navBar'
 	import SiderMenu from './sider'
 	export default {
+		data() {
+			return {
+				minWidth: '500px'
+			}
+		},
 		computed: {
 			key() {
 				return this.$route.fullPath
@@ -41,6 +46,9 @@
 		},
 		components:{
 			NavBar,SiderMenu
+		},
+		mounted() {
+			this.minWidth = (document.body.clientHeight - 120 ) + 'px'
 		}
 	}
 	
@@ -65,13 +73,16 @@
 		.app-main {
 			width: 100%;
       margin: 0 auto 0;
+			overflow-y: scroll;
 		}
 		.admin_footer {
-			bottom: 20px;
+			// bottom: 20px;
 			margin: 0 auto;
 			color: #666;
 			text-align: center;
-			padding:30px 0 20px;
+			// padding:30px 0 20px;
+			height: 50px;
+			line-height: 50px;
 			font-size: 14px;
 		}
 	}

@@ -28,6 +28,9 @@ Page({
   },
   // 获取菜单
   getList() {
+    wx.showLoading({
+      title: '加载中',
+    })
     const vm = this
     wx.request({
       url: app.globalData.urlHead+`/mobile/dinner/getDinner`,
@@ -43,15 +46,19 @@ Page({
             })
           })
         })
-        console.log(vm.data.dinnerList)
+        wx.hideLoading()
       }
     })
   },
 
-  setMenu(item){
-    console.log(item)
-  },
 
+  selectDinnerType(e){
+    console.log(e.currentTarget)
+    const { dinnerType_id, type_name } = e.currentTarget.dataset
+  },
+  showDinnerType(){
+    console.log(232)
+  },
 
   /**
    * 生命周期函数--监听页面加载

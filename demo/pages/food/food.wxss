@@ -56,4 +56,5 @@
 }
 .dinner-item {
   border-top: 1px solid #fff;
+  display: block;
 }
