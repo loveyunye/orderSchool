@@ -8,6 +8,8 @@ Page({
   data: {
     typeName: '全部',
     moveData: null,
+    showSelect:false,
+    imgHeadUrl:'',
     // 
     params: {
       dinnerName: '',
@@ -42,7 +44,7 @@ Page({
         vm.setData({
           dinnerList: res.data.data.map(item => {
             return Object.assign({},item , {
-              imgSrc: JSON.parse(item.dinner_photo)[0].url
+              imgSrc: app.globalData.urlHead+JSON.parse(item.dinner_photo)[0].url
             })
           })
         })
@@ -53,11 +55,23 @@ Page({
 
 
   selectDinnerType(e){
-    console.log(e.currentTarget)
-    const { dinnerType_id, type_name } = e.currentTarget.dataset
+    // console.log(e.currentTarget)
+    const { dinnerType_id, type_name } = e.currentTarget.dataset.text
+    const dinnerType_ever = this.data.params.dinnerType
+    console.log(dinnerType_id, type_name, e.currentTarget.dataset)
+    this.setData({
+      showSelect: !this.data.showSelect,
+      typeName: type_name,
+      params: Object.assign({}, this.data.params, { dinnerType: dinnerType_id })
+    },function(){
+      console.log(dinnerType_ever)
+    })
+    this.getList()
   },
   showDinnerType(){
-    console.log(232)
+    this.setData({
+      showSelect: !this.data.showSelect
+    })
   },
 
   /**
@@ -70,7 +84,6 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
-    
     const dinnerArr = [{
       dinnerType_id: '',
       type_name: '全部'
@@ -78,11 +91,10 @@ Page({
     this.setData({
       dinnerType: dinnerArr
     })
-    console.log(dinnerArr)
   },
 
   radioChange(e) {
-    console.log('radio发生change事件，携带value值为：', e.detail.value)
+
   },
   inputSearch(){
     console.log('搜索')
@@ -93,7 +105,8 @@ Page({
    */
   onShow: function () {
     this.setData({
-      params: Object.assign({}, this.data.paramsBak)
+      params: Object.assign({}, this.data.paramsBak),
+      imgHeadUrl: app.globalData.urlHead
     })
     this.getList()
   },

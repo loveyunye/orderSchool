@@ -45,16 +45,36 @@
 
 .dinner-select {
   position: fixed;
-  top: 40px;
-   width: 20%;
+  top: 50px;
+  width: 100%;
   min-width: 70px;
   text-align: center;
   font-size: 14px;
-  background-color: #25C6FC;
+  background-color: #fff;
   color: #fff;
   line-height: 40px;
+  display: flex;
+  justify-content: space-between;
+  
 }
 .dinner-item {
-  border-top: 1px solid #fff;
+  /* border-top: 1px solid #fff; */
   display: block;
+  width: 19.5%;
+  background-color: #25C6FC;
+  
+}
+
+.food-list {
+  margin-top: 56px;
+}
+.food-item {
+  background-color: #fff;
+  margin-bottom: 6px;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+.food-message {
+
 }

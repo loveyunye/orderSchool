@@ -4,7 +4,7 @@ import OrderSql from '../dao/OrderDao'
 
 const OrderController = (function(){
   function OrderC(){}
-  // 获取菜单
+  // 获取订单信息
   OrderC.prototype.getOrder = function(req, res){
     dataHandler(OrderSql.getOrderSql(req.query)).then(result => {
       //console.log(OrderSql.getOrderSql(req.query))
@@ -40,7 +40,7 @@ const OrderController = (function(){
       res.send(result)
     }).catch(error => {})
   }
-
+  
   return OrderC
 })()
 
