@@ -13,7 +13,7 @@
 
   <!--菜单列表  -->
   <view class='food-list'>
-    <view wx:key="{{item.dinner_id}}" wx:for="{{dinnerList}}" class='food-item' data-text="{{item}}" >
+    <view wx:key="{{item.dinner_id}}" wx:for="{{dinnerList}}" class='food-item' data-view="{{item}}" bindtap='touchFood'>
       
 
       <view>
@@ -24,7 +24,22 @@
         ></image>
       </view>
       <view class='food-message'>
-        <text>{{item.dinner_name}}</text>
+        <view>
+          <text>名称：</text>
+          <text>{{item.dinner_name}}</text>
+        </view>
+        <view>
+          <text>价格：</text>
+          <text>{{item.dinner_price}}￥</text>
+        </view>
+        <view>
+          <text>类型：</text>
+          <text>{{item.type_name}}</text>
+        </view>
+        <view>
+          <text>店家：</text>
+          <text>{{item.name}}</text>
+        </view>
       </view>
 
       

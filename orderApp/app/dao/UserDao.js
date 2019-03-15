@@ -7,6 +7,13 @@ const UserSql = {
     su.password = '${password}'
     AND su.accout = '${accout}'`
   },
+  getUserById:function(user_id){
+    return `SELECT su.*, ct.type_name FROM SchoolOrder.sys_user su
+    LEFT JOIN
+    SchoolOrder.customer_type ct ON su.type_id = ct.type_id
+    WHERE
+    su.user_id = '${user_id}'`
+  },
   updateSql:function(obj){
     return `UPDATE SchoolOrder.sys_user 
     SET accout = '${obj.accout}', password = '${obj.password}', address = '${obj.address}', portrait = '${obj.portrait}', 

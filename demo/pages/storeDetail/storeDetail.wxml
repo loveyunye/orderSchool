@@ -1,0 +1,56 @@
+<!--pages/food.wxml-->
+<view class='storeView'>
+  <!-- 店铺 -->
+  <view class='storeMessage'>
+    <image style="width: 100%; height: 40vh; background-color: #eeeeee;"
+        src="{{storeMessage.portrait}}"
+        mode="aspectFill"></image>
+    <view class='name-address'>
+      <view>{{storeMessage.name}}--{{storeMessage.address}}  </view>
+       <view>{{storeMessage.remark}}--{{storeMessage.phone}} </view> 
+    </view> 
+  </view>
+  <!--选择类型  -->
+  <view class='dinner-select'>
+      <text  wx:for="{{dinnerType}}" wx:key="{{item.dinnerType_id}}" bindtap="selectDinnerType" data-text="{{item}}"  class="dinner-item {{item.dinnerType_id === selectType?'select-item':''}}" >{{item.type_name}} </text>
+  </view>
+
+
+  <!--菜单列表  -->
+  <view class='food-list'>
+    <view wx:key="{{item.dinner_id}}" wx:for="{{dinnerList}}" class='food-item' data-view="{{item}}" style='margin-bottom:6px'>
+      <view>
+        <image
+          style="width: 120px; height: 80px; background-color: #eeeeee;"
+          src="{{item.imgSrc}}"
+          mode="aspectFill"
+        ></image>
+      </view>
+      <view class='food-message'>
+        <view>
+          <text>名称：</text>
+          <text>{{item.dinner_name}}</text>
+        </view>
+        <view>
+          <text>价格：</text>
+          <text>{{item.dinner_price}}￥</text>
+        </view>
+        <view>
+          <text>类型：</text>
+          <text>{{item.type_name}}</text>
+        </view>
+      </view>
+      <view class='add-food'>+</view>
+    </view>
+    
+    <!-- <text>你要的菜品没有啦...</text> -->
+  </view>
+  
+
+  <view class='bottom_order'>
+    <view>
+      <view class='detail-order'>已选择 {{orderForm.total_num}} 件 共计 {{orderForm.total_price}} ￥</view>
+      <view class='go_order'>去下单</view>
+    </view>
+  </view>
+</view>

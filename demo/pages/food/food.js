@@ -52,19 +52,40 @@ Page({
       }
     })
   },
+  // 跳转
+  touchFood(e){
+    const { dinner_id, user_id } = e.currentTarget.dataset.view
+    console.log(dinner_id,user_id)
+    wx.showLoading({
+      title: '跳转中',
+    })
+    wx.request({
+      url: app.globalData.urlHead + `/sys/user/getUserById`,
+      data: {
+        user_id
+      },
+      header: {
+        'content-type': 'application/json' // 默认值
+      },
+      success(res) {
+        wx.setStorageSync('storeMessage', res.data[0])
+        wx.hideLoading()
+        wx.navigateTo({
+          url: '/pages/storeDetail/storeDetail?dinner_id=' + dinner_id,
+        })
+      }
+    })
 
-
+  },
+  // 类型切换
   selectDinnerType(e){
-    // console.log(e.currentTarget)
     const { dinnerType_id, type_name } = e.currentTarget.dataset.text
     const dinnerType_ever = this.data.params.dinnerType
-    console.log(dinnerType_id, type_name, e.currentTarget.dataset)
     this.setData({
       showSelect: !this.data.showSelect,
       typeName: type_name,
       params: Object.assign({}, this.data.params, { dinnerType: dinnerType_id })
     },function(){
-      console.log(dinnerType_ever)
     })
     this.getList()
   },
@@ -93,9 +114,6 @@ Page({
     })
   },
 
-  radioChange(e) {
-
-  },
   inputSearch(){
     console.log('搜索')
   },

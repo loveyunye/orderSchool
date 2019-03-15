@@ -21,7 +21,7 @@
   background-color: #25C6FC;
   color: #fff;
   position: relative;
-  line-height: 40px;
+  line-height: 45px;
 }
 .dinnerType::after {
   position: absolute;
@@ -62,7 +62,6 @@
   display: block;
   width: 19.5%;
   background-color: #25C6FC;
-  
 }
 
 .food-list {
@@ -75,6 +74,16 @@
   display: flex;
   justify-content: space-between;
 }
-.food-message {
 
+
+.food-message {
+  font-size: 15px;
+  line-height: 25px;
+}
+.food-message view text:nth-child(1){
+    color: #25C6FC;
+}
+.food-message view text:nth-child(2){
+  display: inline-block;
+  width: 120px;
 }

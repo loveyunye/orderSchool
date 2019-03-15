@@ -1,1 +1,43 @@
-/* pages/store/store.wxss */
+/* pages/store.wxss */
+.storeView {
+  color: #333;
+  background-color: #fafafa;
+  height: 100vh;
+  width: 100%;
+  overflow-y: scroll;
+}
+
+.storeSearch {
+  position: fixed;
+  top: 0;
+  width: 100vw;
+}
+
+.storeInput {
+  width: 100%;
+  font-size: 14px;
+  background-color: #fff;
+  color: #666;
+  padding: 10px;
+}
+
+
+.store-list {
+  margin-top: 56px;
+}
+.store-item {
+  background-color: #fff;
+  margin-bottom: 6px;
+  padding: 10px; 
+  display: flex;
+}
+.store-item view:nth-child(1){
+  margin-right: 10px;
+}
+.store-message {
+  font-size: 15px;
+  line-height: 25px;
+}
+.store-message view text:nth-child(1){
+    color: #25C6FC;
+}

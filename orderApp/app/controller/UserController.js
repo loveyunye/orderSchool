@@ -12,6 +12,12 @@ const UserController = (function(){
       res.send(result)
     }).catch(error => {})
   }
+  // 获取客户信息 BYID
+  UserC.prototype.getUserById = function(req, res){
+    dataHandler(UserSql.getUserById(req.query.user_id)).then(result => {
+      res.send(result)
+    }).catch(error => {})
+  }
   // 修改信息
   UserC.prototype.updateUser = function(req, res){
     dataHandler(UserSql.updateSql(Object.assign({},usermodel,req.query))).then(result => {

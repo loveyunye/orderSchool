@@ -1,6 +1,6 @@
 // pages/order/order.js
 const list = Array.from(new Array(2)).map((_val, i) => ({
-  avatar: 'http://101.132.44.31/HeadPortrait.jpg',
+  avatar: '',
   shopName: '老板娘很忙饭庄',
   price: '12.5',
   date: '2018-12-11 11:32',
