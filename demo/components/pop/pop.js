@@ -44,7 +44,7 @@ Component({
         delay: 0,
         timingFunction: "ease",
       });
-      animation.translate(-140, 0).step({ duration: 500 })
+      animation.translate(-160, 0).step({ duration: 500 })
       this.setData({ moveData: animation.export() })
     },
     // 弹出缩紧

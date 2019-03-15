@@ -1,9 +1,9 @@
 {
   "pages": [
     "pages/login/login",
+    "pages/food/food",
     "pages/storeDetail/storeDetail",
     "pages/store/store",
-    "pages/food/food",
     "pages/order/order",
     "pages/user/user",
     "pages/index/index",
@@ -13,7 +13,7 @@
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#1296db",
     "navigationBarTitleText": "校园订餐",
-    "navigationBarTextStyle": "#fff"
+    "navigationBarTextStyle": "white"
   },
   "tabBar": {
     "color": "#696969",
