@@ -40,7 +40,7 @@
           <text>{{item.type_name}}</text>
         </view>
       </view>
-      <view class='add-food'>+</view>
+      <view class='add-food' data-view="{{item}}" bindtap='addSelectDinner'>+</view>
     </view>
     
     <!-- <text>你要的菜品没有啦...</text> -->
@@ -49,8 +49,20 @@
 
   <view class='bottom_order'>
     <view>
-      <view class='detail-order'>已选择 {{orderForm.total_num}} 件 共计 {{orderForm.total_price}} ￥</view>
-      <view class='go_order'>去下单</view>
+      <view bindtap='upDownHandler' class="detail-order {{downStatus?'':'detail-up'}}">已选择 {{orderForm.total_num}} 件 共计 {{orderForm.total_price}} ￥</view>
+      <view class="go_order {{orderStatus?'':'order-disable'}}" bindtap='goOrder'>去下单</view>
+      <view class='selectDinner' wx:if="{{!downStatus}}">
+        <view wx:key="{{item.status}}" class='selectItem'  wx:for="{{selectDinnerList}}"  data-view="{{item}}" >
+          <view>
+            {{item.dinner_name}}     
+          </view>
+          <view>
+            <text>{{item.number}} × {{item.dinner_price}}￥</text>
+            <text class='add-food delete-food' data-view="{{item}}" bindtap='deleteSelectDinner'>-</text>
+            <text class='add-food' data-view="{{item}}" bindtap='addSelectDinner'>+</text>
+          </view>
+         </view>
+      </view>
     </view>
   </view>
 </view>

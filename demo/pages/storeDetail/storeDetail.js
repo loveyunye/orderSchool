@@ -6,6 +6,9 @@ Page({
    * 页面的初始数据
    */
   data: {
+    // 收齐放下
+    downStatus:false,
+    orderStatus: false,
     // 已选菜品
     selectDinnerList:[],
     orderForm:{
@@ -37,6 +40,23 @@ Page({
   /**
    * 一些自定义方法
    */
+  //goOrder下单
+  goOrder(){
+    if(this.data.orderStatus){
+      wx.showModal({
+        title: '下单提示',
+        content: '确定之后就不能更改了',
+        success(res) {
+          if (res.confirm) {
+            console.log('用户点击确定')
+          } else if (res.cancel) {
+            console.log('用户点击取消')
+          }
+        }
+      })
+    }
+  },
+  // 选择类型
   selectDinnerType(e){
     const { dinnerType_id } = e.currentTarget.dataset.text;
     this.setData({
@@ -51,6 +71,50 @@ Page({
       })
     })
   },
+  upDownHandler() {
+    this.setData({
+      downStatus: !this.data.downStatus
+    })
+  },
+  // 菜单操作
+  selectHandler(dinner,addStatus){
+    const vm = this;
+    let selectItemIndex = vm.data.selectDinnerList.findIndex(item => item.dinner_id === dinner.dinner_id), 
+    selectDinnerList = vm.data.selectDinnerList.map(item => item);
+    if(addStatus){
+      if (selectItemIndex>=0){
+        selectDinnerList[selectItemIndex].number++
+      } else {
+        selectDinnerList.push(Object.assign({}, dinner, { number: 1 }))
+      }
+    } else {
+      selectDinnerList[selectItemIndex].number --
+      selectDinnerList = selectDinnerList.filter(item => item.number>0)
+    }
+
+    let total_num = 0, total_price = 0;
+    for (let i = 0; i < selectDinnerList.length; i++){
+      total_num += selectDinnerList[i].number
+      total_price += selectDinnerList[i].number * selectDinnerList[i].dinner_price
+    }
+    vm.setData({
+      selectDinnerList: selectDinnerList,
+      orderForm:Object.assign({},vm.data.orderForm,{
+        total_num: total_num,
+        total_price: total_price,
+        order_content: JSON.stringify(selectDinnerList)
+      }),
+      orderStatus: total_num?true:false
+    })
+  },
+  addSelectDinner(e){
+    const {view} = e.currentTarget.dataset
+    this.selectHandler(view,true)
+  },
+  deleteSelectDinner(e){
+    const { view } = e.currentTarget.dataset
+    this.selectHandler(view, false)
+  },
   pageInit(){
     const vm = this
     wx.getStorage({
@@ -62,7 +126,6 @@ Page({
           }),
           params: Object.assign({},vm.data.params,{userId: res.data.user_id})
         })
-        console.log(vm.data.dinner_id)
         vm.getList()
       },
     })
@@ -89,14 +152,7 @@ Page({
           total_price: 0,
           total_num: 0,
         }
-        if(vm.data.dinner_id){
-          selectDinnerList = res.data.data.filter(item => {
-            return item.dinner_id === vm.data.dinner_id
-          })
-          orderForm.total_num = 1
-          orderForm.total_price = selectDinnerList[0].dinner_price
-          orderForm.order_content = JSON.stringify(selectDinnerList)
-        }
+        
 
         vm.setData({
           dinnerList: res.data.data.map(item => {
@@ -109,10 +165,15 @@ Page({
               imgSrc: app.globalData.urlHead + JSON.parse(item.dinner_photo)[0].url
             })
           }),
-
-          selectDinnerList: selectDinnerList,
           orderForm: orderForm
         })
+
+        if (vm.data.dinner_id) {
+          selectDinnerList = res.data.data.filter(item => {
+            return item.dinner_id === vm.data.dinner_id
+          })
+          vm.selectHandler(selectDinnerList[0],true)
+        }
         wx.hideLoading()
       }
     })

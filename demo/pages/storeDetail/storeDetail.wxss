@@ -78,6 +78,9 @@
   background-color: #67c23a;
   border-radius: 15px;
 }
+.delete-food {
+  background-color: #f56c6c;
+}
 
 /* 底部 bottom */
 .bottom_order {
@@ -89,6 +92,29 @@
   line-height: 46px;
   color: #fff;
   padding-left: 40px;
+}
+.selectDinner {
+  position: absolute;
+  bottom: 46px;
+  width: 100vw;
+  line-height: 50px;
+  max-height: 200px;
+  overflow-y: scroll;
+  left: 0;
+  background-color: #fff;
+  
+}
+.selectItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color:#1296db;
+  padding: 0px 10px;
+  margin-bottom: 1px;  
+}
+.selectItem text {
+  display: inline-block;
+  margin-left: 10px;
 }
 .go_order {
   position: absolute;
@@ -118,4 +144,11 @@
   border-left: 1px solid #fff;
   border-top: 1px solid #fff;
   transform: translateY(-50%) rotate(45deg);
+}
+/* 样式 */
+.detail-up::before {
+  transform: translateY(-50%) rotate(225deg);
+}
+.order-disable {
+  color: #ccc;
 }

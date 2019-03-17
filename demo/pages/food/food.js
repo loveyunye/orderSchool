@@ -14,14 +14,14 @@ Page({
     params: {
       dinnerName: '',
       dinnerType: '',
-      length: 10,
+      length: 20,
       start: 0,
       userId: ''
     },
     paramsBak: {
       dinnerName: '',
       dinnerType: '',
-      length: 10,
+      length: 20,
       start: 0,
       userId: ''
     },
