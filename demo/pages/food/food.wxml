@@ -19,7 +19,7 @@
       <view>
         <image
           style="width: 140px; height: 100px; background-color: #eeeeee;"
-          src="{{item.imgSrc}}"
+          src="{{item.dinner_photo}}"
           mode="aspectFill"
         ></image>
       </view>
@@ -45,7 +45,8 @@
       
     </view>
     
-    <!-- <text>你要的菜品没有啦...</text> -->
+    <view class='no-message' wx:if="{{dinnerList.length===0}}">暂无</view>
+
   </view>
   
 

@@ -87,3 +87,11 @@
   display: inline-block;
   width: 120px;
 }
+
+/* 暂无 */
+.no-message {
+  color: #ccc;
+  text-align: center;
+  line-height: 100px;
+  font-size: 30px;
+}

@@ -5,10 +5,10 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
-// var indexRouter = require('./app/routes/routes');
+var indexRouter = require('./app/routes/routes');
 
 // 线上环境
-var indexRouter = require('./dist/routes/routes');
+// var indexRouter = require('./dist/routes/routes');
 
 //本地开发环境
 // var indexRouter = require('./app/routes/routes');

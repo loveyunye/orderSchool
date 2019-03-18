@@ -24,7 +24,7 @@
       </view>
       <view class='about other-item'>
         <button  class='btn' hover-class='none'>
-          <text class='iconfont icon-shezhi'></text> 设置
+          <text class='iconfont icon-shezhi'></text> 设置个人信息
         </button>
       </view>
     </view>

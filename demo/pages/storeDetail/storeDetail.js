@@ -1,4 +1,6 @@
 // pages/storeDetail/storeDetail.js
+import { formatTime } from '../../utils/util.js'
+
 const app = getApp()
 Page({
 
@@ -6,6 +8,7 @@ Page({
    * 页面的初始数据
    */
   data: {
+    urlHead: app.globalData.urlHead,
     // 收齐放下
     downStatus:false,
     orderStatus: false,
@@ -42,15 +45,44 @@ Page({
    */
   //goOrder下单
   goOrder(){
+    const vm = this;
     if(this.data.orderStatus){
       wx.showModal({
-        title: '下单提示',
-        content: '确定之后就不能更改了',
+        title: '提示',
+        content: '确定之后立即下单，无法修改',
+        cancelText: '再想想',
         success(res) {
           if (res.confirm) {
-            console.log('用户点击确定')
+            wx.showLoading({
+              title: '加载中',
+            })
+            // console.log('用户点击确定')
+            wx.request({
+              method: 'POST',
+              url: app.globalData.urlHead + '/mobile/order/orderCreate',
+              data: Object.assign({}, vm.data.orderForm,{ create_time: formatTime(new Date())}),
+              header: {
+                'content-type': 'application/json' // 默认值
+              },
+              success(res) {
+                wx.hideLoading();
+
+                wx.showToast({
+                  title: '下单成功',
+                  icon: 'success',
+                  duration: 1000
+                })
+                setTimeout(function(){
+                  wx.switchTab({
+                    url: '/pages/order/order'
+                  })
+                },1000)
+
+                
+              }
+            })
           } else if (res.cancel) {
-            console.log('用户点击取消')
+            // console.log('用户点击取消')
           }
         }
       })
@@ -151,25 +183,27 @@ Page({
           order_status: 0,
           total_price: 0,
           total_num: 0,
+          create_time:'',
+          remark: '暂无备注'
         }
         
 
         vm.setData({
           dinnerList: res.data.data.map(item => {
             return Object.assign({}, item, {
-              imgSrc: app.globalData.urlHead + JSON.parse(item.dinner_photo)[0].url
+              dinner_photo:  JSON.parse(item.dinner_photo)[0].url
             })
           }),
           dinnerListBak: res.data.data.map(item => {
             return Object.assign({}, item, {
-              imgSrc: app.globalData.urlHead + JSON.parse(item.dinner_photo)[0].url
+              dinner_photo:  JSON.parse(item.dinner_photo)[0].url
             })
           }),
           orderForm: orderForm
         })
 
         if (vm.data.dinner_id) {
-          selectDinnerList = res.data.data.filter(item => {
+          selectDinnerList = vm.data.dinnerList.filter(item => {
             return item.dinner_id === vm.data.dinner_id
           })
           vm.selectHandler(selectDinnerList[0],true)

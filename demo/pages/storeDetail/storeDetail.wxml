@@ -22,7 +22,7 @@
       <view>
         <image
           style="width: 120px; height: 80px; background-color: #eeeeee;"
-          src="{{item.imgSrc}}"
+          src="{{urlHead + item.dinner_photo}}"
           mode="aspectFill"
         ></image>
       </view>
@@ -43,7 +43,7 @@
       <view class='add-food' data-view="{{item}}" bindtap='addSelectDinner'>+</view>
     </view>
     
-    <!-- <text>你要的菜品没有啦...</text> -->
+    <view class='no-message' wx:if="{{dinnerList.length===0}}">暂无</view>
   </view>
   
 

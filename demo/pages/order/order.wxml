@@ -1,42 +1,65 @@
 <import src='../../templates/loadingMore/loadingMore.wxml' />
 
 
-
 <!-- <text>历史订单</text> -->
 <view class='container'>
-  <view class="order" wx:key="{{item.orderId}}" wx:for="{{historyOrderList}}"  wx:for-index="index" wx:for-item="item">
-    <!-- {{index+1}}、 -{{item.shopName}}
-    <image src="{{item.avatar}}"></image> -->
+  <view class='title-order'>进行中订单</view>
 
-    <view class='avatar'>
-      <image src="{{item.avatar}}" mode="cover"></image>
+  <view class="order" wx:key="{{item.order_id}}" wx:for="{{nowOrder}}"  wx:for-index="index" >
+    <view class='avatar' data-view="{{item}}" bindtap='touchstore'>
+      <image src="{{urlHead+item.portrait}}" mode="cover"></image>
     </view>
-    <view class='message'>
+    <view class='message' bindtap='orderDetail'  data-item="{{item}}" >
       
 
       <view class='shopname'>
         <button  class='btn' hover-class='none'>
-          <text>{{item.shopName}}</text>  
+          <text>{{item.name}}</text>  
         </button>
         <!-- <text>{{item.date}}</text> -->
       </view>
       <view class='orderDate'>
-        <text>{{item.date}}</text>
+        <text>{{item.create_time}}</text>
       </view>
 
       <view class='dinnerName'>
-        <view>{{item.dinnerName}}</view>  
-        <view>¥{{item.price}}</view>
+        <view>{{item.order_status === 0?'商家正在准备':'美食正在派送'}}</view>  
+        <view>¥{{item.total_price}}</view>
       </view>
-
-      <view class='comment'>
+      <!-- <view class='comment'>
         <button>评价</button>
         <button>再来一单</button>
-      </view>
-
+      </view> -->
     </view>
-
   </view>
+
+  <view class='no-message' wx:if="{{nowOrder.length===0}}">暂无</view>
+
+  <view class='title-order'>历史订单</view>
+  <view class="order" wx:key="{{item.order_id}}" wx:for="{{historyOrder}}"  wx:for-index="index">
+    <view class='avatar' data-view="{{item}}" bindtap='touchstore'>
+      <image src="{{urlHead+item.portrait}}" mode="cover"></image>
+    </view>
+    <view class='message' bindtap='orderDetail'  data-item="{{item}}" >
+      <view class='shopname'>
+        <button  class='btn' hover-class='none'>
+          <text>{{item.name}}</text>  
+        </button>
+        <!-- <text>{{item.date}}</text> -->
+      </view>
+      <view class='orderDate'>
+        <text>{{item.create_time}}</text>
+      </view>
+      <view class='dinnerName'>
+        <view>订单已完成</view>  
+        <view>¥{{item.total_price}}</view>
+      </view>
+      <!-- <view class='comment'>
+        <button>评价</button>
+        <button>再来一单</button>
+      </view> -->
+    </view>
+  </view>
+  <view class='no-message' wx:if="{{historyOrder.length===0}}">暂无</view>
 </view>
 
-<!-- <template is="loadingMore" /> -->

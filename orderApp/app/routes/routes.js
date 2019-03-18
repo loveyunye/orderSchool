@@ -3,12 +3,14 @@ import UserController from '../controller/UserController'
 import DinnerController from '../controller/DinnerController'
 import CustomerController from '../controller/CustomerController'
 import BasicController from '../controller/BasicController'
+import OrderController from '../controller/OrderController'
 
 
-let customerController = new CustomerController()
-let userController = new UserController()
-let dinnerController = new DinnerController()
-let basicController = new BasicController()
+const customerController = new CustomerController()
+const userController = new UserController()
+const dinnerController = new DinnerController()
+const basicController = new BasicController()
+const orderController = new OrderController()
 
 const router = express.Router();
 router.get('/', function(req, res, next) {
@@ -31,6 +33,10 @@ router.get('/sys/dinner/deleteDinner', dinnerController.deleteDinner )
 router.get('/sys/dinner/dinnerType', dinnerController.getDinnerType )
 
 // 订单操作
+// router.get('/mobile/order/orderCreate', orderController.createOrder )
+router.post('/mobile/order/orderCreate', orderController.createOrder )
+router.get('/mobile/order/getOrderMobile', orderController.getOrderMobile )
+router.get('/sys/order/getOrderSystem', orderController.getOrderSystem )
 
 
 // 图片上传

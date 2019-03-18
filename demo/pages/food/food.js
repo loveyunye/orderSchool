@@ -44,7 +44,7 @@ Page({
         vm.setData({
           dinnerList: res.data.data.map(item => {
             return Object.assign({},item , {
-              imgSrc: app.globalData.urlHead+JSON.parse(item.dinner_photo)[0].url
+              dinner_photo: app.globalData.urlHead+JSON.parse(item.dinner_photo)[0].url
             })
           })
         })
@@ -55,7 +55,6 @@ Page({
   // 跳转
   touchFood(e){
     const { dinner_id, user_id } = e.currentTarget.dataset.view
-    console.log(dinner_id,user_id)
     wx.showLoading({
       title: '跳转中',
     })

@@ -1,0 +1,38 @@
+<!--pages/orderDetail/orderDetail.wxml-->
+<view class='order-detail'>
+  <view class='title-order'>商家信息</view>
+
+  <view class='business-message'>
+    <image style="width: 96px; height: 96px; background-color: #eeeeee;"
+        src="{{urlHead + orderMessage.portrait}}"
+        mode="aspectFill">
+    </image>
+    <view>
+      <view>名称: {{orderMessage.name}}</view>
+      <view>地址: {{orderMessage.address}}</view>
+      <view>联系: {{orderMessage.phone}} </view>
+    </view>
+  </view>
+
+  <view class='title-order'>下单商品</view>
+
+  <view class='order-message'>
+    <view wx:for="{{dinnerList}}" wx:key="{{item.dinner_id}}" class='dinner-item'>
+      <image style="width: 70px; height: 50px; background-color: #eeeeee;"
+          src="{{urlHead + item.dinner_photo}}"
+          mode="aspectFill">
+      </image>
+      <view>
+        <text>{{item.dinner_name}}</text>
+        <text>￥{{item.dinner_price}}</text>
+        <text>×</text>
+        <text>{{item.number}} 件</text>
+      </view>
+    </view>
+  </view>
+
+  <view class=' title-message'>总计：￥{{orderMessage.total_price}}</view>
+  <view class=' title-message'>订单状况：{{statusObject[orderMessage.order_status] }}</view>
+  <view class=' title-message title-message-last'>下单时间：{{orderMessage.create_time}}</view>
+
+</view>

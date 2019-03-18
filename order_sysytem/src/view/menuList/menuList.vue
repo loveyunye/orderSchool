@@ -33,7 +33,7 @@
 			<el-table v-loading="listLoading"
 				:data="dinnerArr" 
 				stripe
-				style="min-height:400px;width: 100%"
+				style="width: 100%"
 				@selection-change="selectRow"
 				>
 				<el-table-column align="center"
