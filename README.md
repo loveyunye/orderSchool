@@ -3,5 +3,5 @@
 > School project
 
 ``` bash
-  composed of three parts
+  正在开发中，还不是完整的项目
 ```
