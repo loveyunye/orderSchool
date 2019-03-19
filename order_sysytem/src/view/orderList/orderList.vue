@@ -21,11 +21,11 @@
 
 
 		<div class="tableBolck">
-			<div class="handerBolck">
+			<!-- <div class="handerBolck">
 				<el-button  size="mini"  type="success" icon="el-icon-plus"  v-show="params.userId">添加</el-button>
         <el-button type="primary" style="margin-left: 5px;" size="mini"  icon="el-icon-edit" v-show="params.userId">编辑</el-button>
         <el-button  size="mini" style="margin-left: 5px;" type="danger" icon="el-icon-delete" >删除</el-button>
-			</div>
+			</div> -->
 
 			<el-table v-loading="listLoading"
 				:data="dinnerArr" 
@@ -33,10 +33,10 @@
 				style="width: 100%"
 				@selection-change="selectRow"
 				>
-				<el-table-column align="center"
+				<!-- <el-table-column align="center"
 					type="selection"
 					width="55">
-				</el-table-column>
+				</el-table-column> -->
 				<el-table-column align="center"
 					prop="nickName"
 					label="客户"
@@ -91,6 +91,13 @@
 				<el-table-column label="下单时间"  align="center">
 					<template slot-scope="scope">
 						<span>{{scope.row["create_time"]}}</span>
+					</template>
+				</el-table-column>
+
+				<el-table-column label="操作" v-if="params.userId"  align="center">
+					<template slot-scope="scope">
+						<span>{{scope.row["create_time"]}}</span>
+						<!-- <button></button> -->
 					</template>
 				</el-table-column>
 			</el-table>
