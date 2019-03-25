@@ -28,7 +28,7 @@
 			</div> -->
 
 			<el-table v-loading="listLoading"
-				:data="dinnerArr" 
+				:data="orderArr" 
 				stripe
 				style="width: 100%"
 				@selection-change="selectRow"
@@ -94,9 +94,12 @@
 					</template>
 				</el-table-column>
 
-				<el-table-column label="操作" v-if="params.userId"  align="center">
+				<el-table-column label="操作( 请按实际运作进行 )" v-show="params.userId"  align="center">
 					<template slot-scope="scope">
-						<span>{{scope.row["create_time"]}}</span>
+						<!-- <span>{{scope.row["create_time"]}}</span> -->
+						<el-button  size="mini" v-show="scope.row['order_status']===0" @click="setS" type="primary" icon="el-icon-success">已准备好，开始派送</el-button>
+						<el-button  size="mini" v-show="scope.row['order_status']===1"  type="success" icon="el-icon-success">派送结束，完成订单</el-button>
+						<span v-show="scope.row['order_status']===2">历史订单，无法操作</span>
 						<!-- <button></button> -->
 					</template>
 				</el-table-column>
@@ -108,7 +111,7 @@
 					background
 					:current-page.sync="pageNum"
 					layout="total, prev, pager, next"
-					:total="dinnerTotal">
+					:total="orderTotal">
 				</el-pagination>
 			</div>
 		</div>
@@ -132,9 +135,9 @@
 					2: '订单已经完成'
 				},
 				// 存储数据
-				selectDinner:[],
+				selectorder:[],
 				menuType: [],
-				dinnerArr: [],
+				orderArr: [],
 				statusArr:[{value:0,status:'一般'},{value:1,status:'推荐'}],
 				// 表格数据
 				params:{
@@ -150,7 +153,7 @@
 					userId: 0
 				},
 				userObject:{},
-				dinnerTotal: 0,
+				orderTotal: 0,
 				pageNum: 1,
 				listLoading:true
 			}
@@ -162,10 +165,14 @@
 			// 表格
 			getList(){
 				this.listLoading = true
-				this.selectDinner = []
+				this.selectorder = []
 				ajax('/sys/order/getOrderSystem',this.params,false).then(res => {
-					this.dinnerArr = res.data.map(item => item)
-					this.dinnerTotal = res.total
+					this.orderArr = res.data.map(item => Object.assign({},
+						item,{
+							create_time: parseTime(item.create_time,'{y}-{m}-{d} {h}:{i}:{s}'),
+						}
+					))
+					this.orderTotal = res.total
 					this.listLoading = false
 
 				})

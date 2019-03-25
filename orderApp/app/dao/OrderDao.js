@@ -19,7 +19,9 @@ const OrderSql = {
     '${OrderObj.business_id}', '${OrderObj.order_status}', '${OrderObj.create_time}', '${OrderObj.remark}','${OrderObj.total_price}');`
   },
   getOrderSystem: function(queryObject){
-    return `SELECT so.*,sm.* FROM SchoolOrder.sys_order so left join SchoolOrder.mobile_customer sm on sm.mobile_userId = so.mobile_userId 
+    return `SELECT ss.name,ss.portrait, so.*,sm.* FROM ( SchoolOrder.sys_order so left join SchoolOrder.mobile_customer sm on sm.mobile_userId = so.mobile_userId )
+    left join
+    SchoolOrder.sys_user ss on ss.user_id = so.business_id
     where locate('${queryObject.userId}',so.business_id)>0 
     and locate('${queryObject.status}',so.order_status)>0   order by  so.order_id desc 
     limit ${queryObject.start},${queryObject.length}
