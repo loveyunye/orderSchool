@@ -23,7 +23,7 @@
       </view>
 
       <view class='dinnerName'>
-        <view>{{item.order_status === 0?'商家正在准备':'美食正在派送'}}</view>  
+        <view>{{item.order_status === 0?'商家还未接单':'正在准备派送'}}</view>  
         <view>¥{{item.total_price}}</view>
       </view>
       <!-- <view class='comment'>

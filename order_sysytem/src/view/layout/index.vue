@@ -71,9 +71,20 @@
 			position: relative;
 		}
 		.app-main {
-			width: 100%;
-      margin: 0 auto 0;
+			// width: 100%;
+      // margin: 0 auto 0;
 			overflow-y: scroll;
+			// overflow-x: hidden;
+			&::-webkit-scrollbar {
+				width: 5px;
+				height: 5px;
+			}
+			&::-webkit-scrollbar-thumb {
+				background-color: rgba(31,120,189,1);
+				border-radius: 2.5px;
+			}
+				 
+			
 		}
 		.admin_footer {
 			// bottom: 20px;

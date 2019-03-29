@@ -31,12 +31,15 @@
 				:data="orderArr" 
 				stripe
 				style="width: 100%"
-				@selection-change="selectRow"
 				>
-				<!-- <el-table-column align="center"
-					type="selection"
-					width="55">
-				</el-table-column> -->
+				<el-table-column label="操作( 请按实际运作进行 )" v-if="params.userId"  align="center">
+					<template slot-scope="scope">
+						<el-button  size="mini" v-show="scope.row['order_status']===0" @click="setStatus(scope.row,1)" type="primary" icon="el-icon-success">已准备好，开始派送</el-button>
+						<el-button  size="mini" v-show="scope.row['order_status']===1" @click="setStatus(scope.row,2)"  type="success" icon="el-icon-success">派送结束，完成订单</el-button>
+						<span v-show="scope.row['order_status']===2" @click="setStatus(scope.row,1)">历史订单，无法操作</span>
+					</template>
+				</el-table-column>
+				
 				<el-table-column align="center"
 					prop="nickName"
 					label="客户"
@@ -93,16 +96,7 @@
 						<span>{{scope.row["create_time"]}}</span>
 					</template>
 				</el-table-column>
-
-				<el-table-column label="操作( 请按实际运作进行 )" v-show="params.userId"  align="center">
-					<template slot-scope="scope">
-						<!-- <span>{{scope.row["create_time"]}}</span> -->
-						<el-button  size="mini" v-show="scope.row['order_status']===0" @click="setS" type="primary" icon="el-icon-success">已准备好，开始派送</el-button>
-						<el-button  size="mini" v-show="scope.row['order_status']===1"  type="success" icon="el-icon-success">派送结束，完成订单</el-button>
-						<span v-show="scope.row['order_status']===2">历史订单，无法操作</span>
-						<!-- <button></button> -->
-					</template>
-				</el-table-column>
+				
 			</el-table>
 
 			<div class="page_block">
@@ -130,7 +124,7 @@
 		data() {
 			return {
 				statusObject: {
-					0: '商家正在准备',
+					0: '商家还未接单',
 					1: '美食正在派送',
 					2: '订单已经完成'
 				},
@@ -146,7 +140,7 @@
 					start: 0,
 					userId: 0
 				},
-				paramsBar:{
+				paramsBak:{
 					status: '',
 					length:10,
 					start: 0,
@@ -159,9 +153,17 @@
 			}
 		},
 		methods: {
-			selectRow() {
-
+			setStatus(item, statuCode) {
+				console.log(item,statuCode);
+				ajax('/sys/order/setOrderStatus',{
+					orderId: item.order_id,
+					statusCode: statuCode
+				}).then(res => {
+					this.params = Object.assign({},this.params,this.paramsBak);
+					this.getList();
+				})
 			},
+
 			// 表格
 			getList(){
 				this.listLoading = true
@@ -183,7 +185,7 @@
 			},
 			resetList(){
 				for(let k in  this.params){
-					this.params[k] = this.paramsBar[k]
+					this.params[k] = this.paramsBak[k]
 				}
 				this.params.userId = this.userObject.user_id
 				this.pageNum = 1
@@ -191,7 +193,6 @@
 			}
 
 			
-		
 		},
 		components:{
 			
@@ -203,12 +204,19 @@
 			])
 		},
 		mounted(){
-			this.getList()
 			this.userObject = JSON.parse(this.userMess)
 			if(this.token === 'admin'){
 				this.userObject.user_id = ''
-			}
+			} 
+			// else {
+			// 	this.params.userId = this.userObject.user_id
+			// 	this.paramsBak.userId = this.userObject.user_id
+			// }
 			this.params.userId = this.userObject.user_id
+			this.paramsBak.userId = this.userObject.user_id
+			
+			this.getList()
+
 		}
 	}
 	

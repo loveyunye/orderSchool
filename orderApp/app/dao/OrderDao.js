@@ -6,12 +6,12 @@ const OrderSql = {
     ; 
     `
   },
-  getOrderNum:function(queryObject){
-    const strUserOption = queryObject.userId? `ss.user_id = ${queryObject.userId}  and`:``
-    return `SELECT count(*) as num FROM SchoolOrder.sys_Order ss  where `+strUserOption+`
-    locate('${queryObject.OrderName}',ss.Order_name)>0 and
-    locate('${queryObject.OrderType}',ss.Order_type)>0`
-  },
+  // getOrderNum:function(queryObject){
+  //   const strUserOption = queryObject.userId? `ss.user_id = ${queryObject.userId}  and`:``
+  //   return `SELECT count(*) as num FROM SchoolOrder.sys_Order ss  where `+strUserOption+`
+  //   locate('${queryObject.OrderName}',ss.Order_name)>0 and
+  //   locate('${queryObject.OrderType}',ss.Order_type)>0`
+  // },
   createSql:function(OrderObj){
     return `INSERT INTO SchoolOrder.sys_order 
     (order_content, mobile_userId, business_id, order_status, create_time, remark, total_price) 
@@ -41,9 +41,24 @@ const OrderSql = {
   typeSql:function(){
     return `SELECT * FROM SchoolOrder.Order_type`
   },
+  // 设置订单状态
+  setOrderStatus:function(queryObject){
+    return `UPDATE SchoolOrder.sys_order SET order_status = '${queryObject.statusCode}' WHERE (order_id = '${queryObject.orderId}');`
+  },
 
-  getOrderSqlMobile:function(){
-    
+  // 获取新订单状态
+  getOrderNumByStatus: function(queryObject) {
+    return `SELECT sum(total_price) as price, count(*) as num FROM SchoolOrder.sys_order where locate('${queryObject.userId}',business_id)>0 and locate('${queryObject.status}',order_status)>0`
+  },
+
+
+  // 商家排行
+  businessRank: function() {
+    return `SELECT count(ss.total_price) as number,sum(ss.total_price) as price, su.name FROM SchoolOrder.sys_order ss 
+    left join SchoolOrder.sys_user su on su.user_id = ss.business_id  
+    where order_status = 2 
+    group by ss.business_id order by  sum(ss.total_price) desc limit 0,10;`;
   }
+  
 }
 export default OrderSql

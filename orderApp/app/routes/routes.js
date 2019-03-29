@@ -32,11 +32,14 @@ router.get('/sys/dinner/updateDinner', dinnerController.updateDinner )
 router.get('/sys/dinner/deleteDinner', dinnerController.deleteDinner )
 router.get('/sys/dinner/dinnerType', dinnerController.getDinnerType )
 
-// 订单操作
+// 订单操作 
 // router.get('/mobile/order/orderCreate', orderController.createOrder )
 router.post('/mobile/order/orderCreate', orderController.createOrder )
 router.get('/mobile/order/getOrderMobile', orderController.getOrderMobile )
 router.get('/sys/order/getOrderSystem', orderController.getOrderSystem )
+router.get('/sys/order/setOrderStatus', orderController.setOrderStatus )
+router.get('/sys/order/getOrderNumByStatus', orderController.getOrderNumByStatus )
+router.get('/sys/order/businessRank', orderController.businessRank )
 
 
 // 图片上传
