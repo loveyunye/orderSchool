@@ -1,7 +1,8 @@
 <template>
-  <div  :style="{height: minWidth}" id="BusinessView">
-    <div>您有新的订单</div>
-    <div>您有新的订单</div>
+  <div  :style="{height: minHeight}" id="BusinessView">
+    <div>
+      
+    </div>
   </div>
 </template>
 
@@ -9,11 +10,11 @@
 export default {
   data() {
     return {
-      minWidth: '',
+      minHeight: '',
     }
   },
   mounted() {
-    this.minWidth = (document.body.clientHeight - 120 - 80 - 100 ) + 'px'
+    this.minHeight = (document.body.clientHeight - 120 - 80 - 100 ) + 'px'
   }
 }
 </script>
@@ -26,6 +27,8 @@ export default {
     div {
       background-color: #fff;
       height: 100%;
+      width: 100%;
+      display: flex;
     }
   }
 </style>

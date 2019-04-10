@@ -10,7 +10,7 @@
 		</el-row>
 		
 		<BusinessView v-if="userObject.user_id" style="margin-top:10px"/>
-		<div  v-else>
+		<div id="BusinessRank" v-else>
 			<BusinessRank :show="userObject.user_id===''"/>
 		</div>
 
