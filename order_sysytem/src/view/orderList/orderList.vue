@@ -97,6 +97,30 @@
 					</template>
 				</el-table-column>
 				
+				<el-table-column type="expand" label="订单详情" width="120">
+				  <template slot-scope="scope">
+						<el-row v-for="(item, index) in scope.row.content" :key="index">
+							<el-col :span="5" :offset="2">
+							 	菜单名：	{{ item.dinner_name }}
+							</el-col>
+							<el-col :span="5">
+							 	价格：	{{ item.dinner_price }}¥
+							</el-col>
+							<el-col :span="5">
+							 	数量：	{{ item.number }}
+							</el-col>
+							<el-col :span="5">
+							 	<el-popover 
+									placement="right"
+									trigger="hover">
+									<img :src="item.dinner_photo" style="max-height: 300px;max-width: 400px;" />
+									<img slot="reference" :src="item.dinner_photo" alt="暂无" style="max-height: 20px;max-width: 130px;">
+								</el-popover>
+							</el-col>
+						</el-row>
+
+				  </template>
+				 </el-table-column>
 			</el-table>
 
 			<div class="page_block">
@@ -172,10 +196,12 @@
 					this.orderArr = res.data.map(item => Object.assign({},
 						item,{
 							create_time: parseTime(item.create_time,'{y}-{m}-{d} {h}:{i}:{s}'),
+							content: JSON.parse(item.order_content)
 						}
 					))
 					this.orderTotal = res.total
 					this.listLoading = false
+					console.log(this.orderArr)
 
 				})
 			},
@@ -243,4 +269,5 @@
 			margin: 20px auto 0;
 		}
 	}
+ 
 </style>

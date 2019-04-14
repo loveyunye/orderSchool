@@ -1,9 +1,9 @@
 
 
 mysql:
-  host:   'localhost' #测试
+  host:   '47.102.192.173' #测试
   user:   'root'
-  password: '123456'
+  password: 'Xu123456'
   database: 'SchoolOrder'
 app: 
   appId:      'wxc120028248996483'
