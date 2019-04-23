@@ -16,6 +16,7 @@ const user = {
     token: getToken(),
     name: getUserName(),
     accountMess: getMessage(),
+    timer: null
   },
   mutations: {
     SET_USER: (state, name) => {
@@ -32,6 +33,13 @@ const user = {
     },
     SET_MESS: (state,message) => {
       state.accountMess = message
+    },
+
+    SET_TIMER: (state,timer) => {
+      state.timer = timer
+    },
+    CLEAR_TIMER: (state) => {
+      clearTimeout(state.timer)
     }
   },
   actions: {
@@ -71,6 +79,12 @@ const user = {
       })
     },
 
+    setTimer({commit},timer) {
+      commit('SET_TIMER',timer)
+    },
+    clearTimer({commit}) {
+      commit('CLEAR_TIMER')
+    },
 
     
 

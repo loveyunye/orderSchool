@@ -9,6 +9,8 @@ import router from './router'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import { getToken } from '@/utils/auth'
+import store from '@/store';
+
 
 import { Message } from 'element-ui';
 
@@ -19,6 +21,9 @@ const whiltList = ['login']
 
 router.beforeEach((to,from,next) => {
   NProgress.start()
+  if(to.path !== '/dashboard/index') {
+    store.dispatch('clearTimer');
+  }
   if(getToken()) {
     if(to.path === '/login'){
       next({path: '/'})

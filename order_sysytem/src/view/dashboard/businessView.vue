@@ -16,6 +16,7 @@
 <script>
 import ajax from '@/utils/ajax.js';
 import { mapGetters } from 'vuex'
+import { setTimeout, setInterval, clearTimeout, clearInterval } from 'timers';
 
 export default {
   data() {
@@ -44,8 +45,7 @@ export default {
         status: 0,
         start: 0,
         length: 100
-      }).then(res => {
-        console.log(res)
+      },true).then(res => {
         this.orderNoget = res.total;
       });
       ajax('/sys/order/getOrderSystem',{
@@ -54,7 +54,6 @@ export default {
         start: 0,
         length: 100
       }).then(res => {
-        console.log(res);
         this.orderNoSend = res.total;
       })
     },
@@ -64,10 +63,17 @@ export default {
   },
   mounted() {
     this.minHeight = (document.body.clientHeight - 120 - 80 - 100 ) + 'px';
-    this.getOrderByStatus();
+    const vm = this;
+    vm.getOrderByStatus();
+
+    this.timer = setInterval(function(){
+      vm.getOrderByStatus();
+    },6000)
+
   },
   destroyed() {
-
+    const vm = this;
+    clearInterval(vm.timer)
   }
 }
 </script>
