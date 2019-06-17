@@ -159,9 +159,11 @@
 </template>
 
 <script type="text/javascript">
-	import ajax from '@/utils/ajax.js'
+  import ajax from '@/utils/ajax.js'
+  import axios from 'axios'
 	import { mapGetters } from 'vuex'
 	import { parseTime ,formatDateTime} from '../../utils'
+import { format } from 'path';
 
 
 	export default {
@@ -236,6 +238,17 @@
 			handlerRow(){
 				this.$refs.userObject.validate(valid => {
           if (valid) {
+            let formObj = new FormData();
+            for(let key in this.userObject) {
+              formObj.append(key, this.userObject[key]);
+            }
+            // axios.post('/sys/user/createUser', formObj).then(res => {
+            //   this.$message.success(`新增成功`)
+            //   this.dialogFormVisible = false
+						// 	this.getList()
+            // })
+
+
 						ajax('/sys/user/createUser',this.userObject,'.messForm').then(res => {
               this.$message.success(`新增成功`)
               this.dialogFormVisible = false

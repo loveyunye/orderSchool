@@ -62,8 +62,8 @@ App({
   },
   globalData: {
     userInfo: null,
-    urlHead: 'http://localhost:3001',
-    // urlHead: 'http://www.kabutong.top:3001',
+    // urlHead: 'http://localhost:3001',
+    urlHead: 'http://www.kabutong.top:3001',
     dinnerType: []
   },
 

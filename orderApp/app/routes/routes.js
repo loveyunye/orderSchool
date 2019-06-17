@@ -20,6 +20,8 @@ router.get('/', function(req, res, next) {
 router.get('/sys/user/getUser',userController.getUser)
 router.get('/sys/user/updateUser',userController.updateUser)
 router.get('/sys/user/createUser',userController.createUser)
+
+router.post('/sys/user/createUser',userController.createUser)
 router.get('/sys/user/userTypes',userController.userTypes)
 router.get('/sys/user/getUserList',userController.getUserList)
 router.get('/sys/user/deleteUser',userController.deleteUser)

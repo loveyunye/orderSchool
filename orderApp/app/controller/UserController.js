@@ -26,7 +26,8 @@ const UserController = (function(){
   }
   // 创建用户
   UserC.prototype.createUser = function(req, res){
-    dataHandler(UserSql.createUser(req.query)).then(result => {
+    console.log(req )
+    dataHandler(UserSql.createUser(req.query ||req.body)).then(result => {
       res.send(result)
     }).catch(error => {})
   }
