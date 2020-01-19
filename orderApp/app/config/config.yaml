@@ -1,10 +1,10 @@
 
 
 mysql:
-  host:   '47.102.192.173' #测试
+  host:   'localhost' #测试
   user:   'root'
-  password: 'Xu123456'
-  database: 'SchoolOrder'
+  password: 'xu'
+  database: 'xu'
 app: 
   appId:      'wxc120028248996483'
   appSecret: 'c7b4253df55734869b8a3824975894a4'
